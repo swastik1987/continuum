@@ -82,11 +82,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Continuum — CNH Care Continuity" },
       { name: "description", content: "Closed-loop care continuity engine by Connect & Heal" },
       { name: "author", content: "Connect & Heal" },
-      { property: "og:title", content: "Continuum — CNH" },
-      { property: "og:description", content: "Closed-loop care continuity engine" },
+      { property: "og:title", content: "Continuum — CNH Care Continuity" },
+      { property: "og:description", content: "Closed-loop care continuity engine by Connect & Heal" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Continuum — CNH Care Continuity" },
+      { name: "twitter:description", content: "Closed-loop care continuity engine by Connect & Heal" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d13dfcc1-f588-489c-90d9-f70f343ba28f" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d13dfcc1-f588-489c-90d9-f70f343ba28f" },
     ],
     links: [
       {
