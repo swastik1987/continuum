@@ -1,23 +1,24 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/auth/context";
+import { ROLE_HOME } from "@/features/admin/RoleSwitcher";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
-    ],
-  }),
   component: Index,
 });
 
 function Index() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <p className="text-center text-lg font-medium text-foreground">
-        Continuum — scaffold ready. UI built via Claude Code.
-      </p>
-    </div>
-  );
+  const { effectiveRole, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loading) return;
+    if (!effectiveRole) {
+      navigate({ to: "/login", replace: true });
+    } else {
+      navigate({ to: ROLE_HOME[effectiveRole], replace: true });
+    }
+  }, [loading, effectiveRole, navigate]);
+
+  return null;
 }

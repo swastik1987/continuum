@@ -1,0 +1,86 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import type { Session, AuthError } from '@supabase/supabase-js'
+import { supabase } from '@/integrations/supabase/client'
+import type { Tables, Enums } from '@/lib/database.types'
+
+type AuthContextValue = {
+  session: Session | null
+  profile: Tables<'profiles'> | null
+  loading: boolean
+  viewAs: Enums<'user_role'> | null
+  setViewAs: (role: Enums<'user_role'> | null) => void
+  effectiveRole: Enums<'user_role'> | null
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signOut: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null)
+
+function getStoredViewAs(): Enums<'user_role'> | null {
+  if (typeof window === 'undefined') return null
+  return (localStorage.getItem('continuum.viewAs') as Enums<'user_role'>) ?? null
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null)
+  const [profile, setProfile] = useState<Tables<'profiles'> | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [viewAs, setViewAsState] = useState<Enums<'user_role'> | null>(getStoredViewAs)
+
+  async function fetchProfile(userId: string) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    setProfile(data)
+  }
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession)
+      if (newSession?.user) {
+        await fetchProfile(newSession.user.id)
+      } else {
+        setProfile(null)
+        // Clear viewAs on sign-out
+        setViewAsState(null)
+        if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
+      }
+      setLoading(false)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const setViewAs = (role: Enums<'user_role'> | null) => {
+    setViewAsState(role)
+    if (typeof window !== 'undefined') {
+      if (role) localStorage.setItem('continuum.viewAs', role)
+      else localStorage.removeItem('continuum.viewAs')
+    }
+  }
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error }
+  }
+
+  const signOut = async () => {
+    setViewAs(null)
+    await supabase.auth.signOut()
+  }
+
+  const effectiveRole = viewAs ?? profile?.role ?? null
+
+  return (
+    <AuthContext.Provider value={{ session, profile, loading, viewAs, setViewAs, effectiveRole, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>')
+  return ctx
+}
