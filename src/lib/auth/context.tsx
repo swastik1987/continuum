@@ -28,13 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [viewAs, setViewAsState] = useState<Enums<'user_role'> | null>(getStoredViewAs)
 
   async function fetchProfile(userId: string) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    setProfile(data)
-    setLoading(false)
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+      setProfile(data)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -44,9 +47,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // listeners before resolving signInWithPassword, which causes a 12 s timeout if the
       // profiles DB query is slow. Fire-and-forget fetchProfile; loading stays true until it
       // resolves, so router guards keep showing the spinner rather than redirecting to /login.
-      const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
         setSession(newSession)
         if (newSession?.user) {
+          // Clear stale viewAs from a previous session so a fresh login always
+          // routes to the signed-in user's own home, not a carried-over persona.
+          if (event === 'SIGNED_IN') {
+            setViewAsState(null)
+            if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
+          }
           void fetchProfile(newSession.user.id)
         } else {
           setProfile(null)
