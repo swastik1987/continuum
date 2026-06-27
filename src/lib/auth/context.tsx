@@ -37,19 +37,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession)
-      if (newSession?.user) {
-        await fetchProfile(newSession.user.id)
-      } else {
-        setProfile(null)
-        // Clear viewAs on sign-out
-        setViewAsState(null)
-        if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
-      }
+    let subscription: { unsubscribe: () => void } | null = null
+    try {
+      const { data } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        setSession(newSession)
+        if (newSession?.user) {
+          await fetchProfile(newSession.user.id)
+        } else {
+          setProfile(null)
+          setViewAsState(null)
+          if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
+        }
+        setLoading(false)
+      })
+      subscription = data.subscription
+    } catch (err) {
+      console.error('[Auth] onAuthStateChange setup failed:', err)
       setLoading(false)
-    })
-    return () => subscription.unsubscribe()
+    }
+    return () => subscription?.unsubscribe()
   }, [])
 
   const setViewAs = (role: Enums<'user_role'> | null) => {
@@ -61,8 +67,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error }
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      return { error }
+    } catch (err) {
+      return {
+        error: {
+          message: err instanceof Error ? err.message : 'Unexpected sign-in error.',
+        } as AuthError,
+      }
+    }
   }
 
   const signOut = async () => {

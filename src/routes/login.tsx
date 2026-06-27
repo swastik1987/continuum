@@ -28,12 +28,30 @@ function LoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error: authError } = await signIn(email, password)
-    setLoading(false)
-    if (authError) {
-      setError(authError.message)
-    } else {
-      navigate({ to: '/' })
+
+    // Abort after 12 s so a paused/unreachable Supabase project shows a clear message
+    const controller = { cancelled: false }
+    const timeoutId = setTimeout(() => {
+      controller.cancelled = true
+      setLoading(false)
+      setError('Connection timed out. Make sure your Supabase project is active and try again.')
+    }, 12_000)
+
+    try {
+      const { error: authError } = await signIn(email, password)
+      if (controller.cancelled) return
+      clearTimeout(timeoutId)
+      if (authError) {
+        setError(authError.message)
+      } else {
+        navigate({ to: '/' })
+      }
+    } catch (err) {
+      if (controller.cancelled) return
+      clearTimeout(timeoutId)
+      setError(err instanceof Error ? err.message : 'Sign in failed — please try again.')
+    } finally {
+      if (!controller.cancelled) setLoading(false)
     }
   }
 
