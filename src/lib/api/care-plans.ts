@@ -8,6 +8,7 @@ export type ConsultationRow = Tables<'consultations'>
 export type ActivePlanResult = {
   plan: CarePlanRow
   consultation: ConsultationRow | null
+  providerName: string | null
   actions: ActionRow[]
 }
 
@@ -39,11 +40,32 @@ export async function getActivePlanForMember(memberId: string): Promise<ActivePl
     consultation = data ?? null
   }
 
+  let providerName: string | null = null
+  if (consultation?.provider_id) {
+    const { data: provider } = await supabase
+      .from('providers')
+      .select('full_name')
+      .eq('id', consultation.provider_id)
+      .single()
+    providerName = provider?.full_name ?? null
+  }
+
   return {
     plan,
     consultation,
+    providerName,
     actions: actions ?? [],
   }
+}
+
+export async function getAction(actionId: string): Promise<ActionRow | null> {
+  const { data } = await supabase
+    .from('care_plan_actions')
+    .select('*')
+    .eq('id', actionId)
+    .single()
+
+  return data ?? null
 }
 
 export async function listActionsForPlan(carePlanId: string): Promise<ActionRow[]> {
