@@ -17,6 +17,7 @@ export interface TaskFilter {
   priority?: Enums<'task_priority'>
   status?: Enums<'task_status'>
   trigger_reason?: Enums<'task_reason'>
+  member_id?: string
 }
 
 export async function listNavigatorTasks(
@@ -31,6 +32,7 @@ export async function listNavigatorTasks(
   if (filter.priority) query = query.eq('priority', filter.priority)
   if (filter.status) query = query.eq('status', filter.status)
   if (filter.trigger_reason) query = query.eq('trigger_reason', filter.trigger_reason)
+  if (filter.member_id) query = query.eq('member_id', filter.member_id)
 
   const { data } = await query
 
@@ -61,6 +63,10 @@ export async function updateTaskStatus(
       resolved_at: status === 'resolved' ? new Date().toISOString() : undefined,
     })
     .eq('id', taskId)
+}
+
+export async function resolveTask(taskId: string, notes?: string): Promise<void> {
+  return updateTaskStatus(taskId, 'resolved', notes)
 }
 
 export async function createNavigatorTask(

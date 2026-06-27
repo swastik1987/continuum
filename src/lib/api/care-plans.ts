@@ -109,3 +109,29 @@ export async function listConsultationsForMember(memberId: string): Promise<Cons
 
   return (data ?? []) as ConsultationWithProvider[]
 }
+
+// Returns the single most urgent at-risk action for a member (overdue first, then declined).
+// Used by the navigator worklist "Action at risk" column.
+export async function getAtRiskActionForMember(memberId: string): Promise<ActionRow | null> {
+  const { data: overdue } = await supabase
+    .from('care_plan_actions')
+    .select('*')
+    .eq('member_id', memberId)
+    .eq('status', 'overdue')
+    .order('due_date', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (overdue) return overdue
+
+  const { data: declined } = await supabase
+    .from('care_plan_actions')
+    .select('*')
+    .eq('member_id', memberId)
+    .eq('status', 'declined')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return declined ?? null
+}
