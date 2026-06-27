@@ -20,7 +20,7 @@ export async function getActivePlanForMember(memberId: string): Promise<ActivePl
     .eq('status', 'active')
     .order('created_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (!plan) return null
 
@@ -44,7 +44,7 @@ export async function getActivePlanForMember(memberId: string): Promise<ActivePl
   if (consultation?.provider_id) {
     const { data: provider } = await supabase
       .from('providers')
-      .select('full_name')
+      .select('*')
       .eq('id', consultation.provider_id)
       .single()
     providerName = provider?.full_name ?? null

@@ -37,6 +37,7 @@ export type Database = {
           contract_lives?: number | null
           created_at?: string | null
         }
+        Relationships: []
       }
       providers: {
         Row: {
@@ -57,6 +58,7 @@ export type Database = {
           specialty?: string | null
           created_at?: string | null
         }
+        Relationships: []
       }
       members: {
         Row: {
@@ -107,6 +109,7 @@ export type Database = {
           is_chronic?: boolean | null
           created_at?: string | null
         }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -136,6 +139,7 @@ export type Database = {
           provider_id?: string | null
           created_at?: string | null
         }
+        Relationships: []
       }
       consultations: {
         Row: {
@@ -165,6 +169,7 @@ export type Database = {
           chief_complaint?: string | null
           summary?: string | null
         }
+        Relationships: []
       }
       care_plans: {
         Row: {
@@ -191,6 +196,7 @@ export type Database = {
           created_by?: string | null
           created_at?: string | null
         }
+        Relationships: []
       }
       care_plan_actions: {
         Row: {
@@ -238,6 +244,7 @@ export type Database = {
           completed_via_event_id?: string | null
           created_at?: string | null
         }
+        Relationships: []
       }
       nudges: {
         Row: {
@@ -273,6 +280,7 @@ export type Database = {
           response_text?: string | null
           sent_at?: string | null
         }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -299,6 +307,7 @@ export type Database = {
           body?: string
           created_at?: string | null
         }
+        Relationships: []
       }
       clinical_events: {
         Row: {
@@ -328,6 +337,7 @@ export type Database = {
           occurred_at?: string | null
           payload?: Json
         }
+        Relationships: []
       }
       navigator_tasks: {
         Row: {
@@ -363,6 +373,7 @@ export type Database = {
           created_at?: string | null
           resolved_at?: string | null
         }
+        Relationships: []
       }
       sim_state: {
         Row: {
@@ -380,6 +391,7 @@ export type Database = {
           current_day?: string
           updated_at?: string | null
         }
+        Relationships: []
       }
     }
     Views: Record<string, never>

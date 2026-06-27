@@ -6,7 +6,7 @@ export type MemberRow = Tables<'members'>
 export async function getMemberByProfileId(profileId: string): Promise<MemberRow | null> {
   const { data: profile } = await supabase
     .from('profiles')
-    .select('member_id')
+    .select('*')
     .eq('id', profileId)
     .single()
 

@@ -98,7 +98,7 @@ function MessageBubble({ msg, prevSender }: { msg: MessageRow; prevSender: strin
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 4, marginTop: 3 }}>
             <span style={{ fontSize: 11, color: '#8794A5' }}>
-              {format(new Date(msg.created_at), 'h:mm a')}
+              {format(new Date(msg.created_at ?? Date.now()), 'h:mm a')}
             </span>
             <CheckCheck size={14} strokeWidth={1.75} color="#0E8C7F" />
           </div>
@@ -137,7 +137,7 @@ function MessageBubble({ msg, prevSender }: { msg: MessageRow; prevSender: strin
         </div>
         <div style={{ marginTop: 3 }}>
           <span style={{ fontSize: 11, color: '#8794A5' }}>
-            {format(new Date(msg.created_at), 'h:mm a')}
+            {format(new Date(msg.created_at ?? Date.now()), 'h:mm a')}
           </span>
         </div>
       </div>

@@ -172,7 +172,7 @@ function ActionCta({ action, onOpen }: { action: ActionRow; onOpen: () => void }
 export function ActionCard({ action, onOpen }: Props) {
   const iconStyle = actionIconStyle(action.status)
   const ActionIcon = ACTION_ICON[action.action_type]
-  const subtitle = action.action_subtitle ?? ACTION_SUBTITLE[action.action_type]
+  const subtitle = ACTION_SUBTITLE[action.action_type]
   const hasCliniciandBadge =
     action.provenance === 'clinician_authored' || action.provenance === 'clinician_confirmed'
 
@@ -209,7 +209,7 @@ export function ActionCard({ action, onOpen }: Props) {
           {/* Title + status badge */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: '#13233A', letterSpacing: '-0.01em', lineHeight: 1.25 }}>
-              {action.action_title}
+              {action.title}
             </div>
             <StatusBadge action={action} />
           </div>

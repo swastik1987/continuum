@@ -91,7 +91,7 @@ export function ActionDetail({ actionId }: Props) {
 
   const iconStyle = actionIconStyle(action.status)
   const ActionIcon = ACTION_ICON[action.action_type]
-  const subtitle = action.action_subtitle ?? ACTION_SUBTITLE[action.action_type]
+  const subtitle = ACTION_SUBTITLE[action.action_type]
   const hasCliniciandBadge =
     action.provenance === 'clinician_authored' || action.provenance === 'clinician_confirmed'
   const walletBalance = member?.wallet_balance ?? 0
@@ -181,7 +181,7 @@ export function ActionDetail({ actionId }: Props) {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 17, fontWeight: 700, color: '#13233A', letterSpacing: '-0.015em', lineHeight: 1.25 }}>
-                {action.action_title}
+                {action.title}
               </div>
               <div style={{ fontSize: 13, color: '#8794A5', marginTop: 4 }}>{subtitle}</div>
               <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
