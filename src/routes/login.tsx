@@ -28,6 +28,7 @@ function LoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
 
     // Abort after 12 s so a paused/unreachable Supabase project shows a clear message
     const controller = { cancelled: false }
