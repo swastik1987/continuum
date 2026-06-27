@@ -9,38 +9,226 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppPatientRouteImport } from './routes/_app/patient'
+import { Route as AppNavigatorRouteImport } from './routes/_app/navigator'
+import { Route as AppEmployerRouteImport } from './routes/_app/employer'
+import { Route as AppClinicianRouteImport } from './routes/_app/clinician'
+import { Route as AppPatientIndexRouteImport } from './routes/_app/patient/index'
+import { Route as AppNavigatorIndexRouteImport } from './routes/_app/navigator/index'
+import { Route as AppEmployerIndexRouteImport } from './routes/_app/employer/index'
+import { Route as AppClinicianIndexRouteImport } from './routes/_app/clinician/index'
+import { Route as AppAdminIndexRouteImport } from './routes/_app/admin/index'
+import { Route as AppPatientRecordsRouteImport } from './routes/_app/patient/records'
+import { Route as AppPatientProfileRouteImport } from './routes/_app/patient/profile'
+import { Route as AppPatientChatRouteImport } from './routes/_app/patient/chat'
+import { Route as AppPatientActionActionIdRouteImport } from './routes/_app/patient/action.$actionId'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppPatientRoute = AppPatientRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNavigatorRoute = AppNavigatorRouteImport.update({
+  id: '/navigator',
+  path: '/navigator',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployerRoute = AppEmployerRouteImport.update({
+  id: '/employer',
+  path: '/employer',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClinicianRoute = AppClinicianRouteImport.update({
+  id: '/clinician',
+  path: '/clinician',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPatientIndexRoute = AppPatientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppPatientRoute,
+} as any)
+const AppNavigatorIndexRoute = AppNavigatorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppNavigatorRoute,
+} as any)
+const AppEmployerIndexRoute = AppEmployerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppEmployerRoute,
+} as any)
+const AppClinicianIndexRoute = AppClinicianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppClinicianRoute,
+} as any)
+const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPatientRecordsRoute = AppPatientRecordsRouteImport.update({
+  id: '/records',
+  path: '/records',
+  getParentRoute: () => AppPatientRoute,
+} as any)
+const AppPatientProfileRoute = AppPatientProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppPatientRoute,
+} as any)
+const AppPatientChatRoute = AppPatientChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppPatientRoute,
+} as any)
+const AppPatientActionActionIdRoute =
+  AppPatientActionActionIdRouteImport.update({
+    id: '/action/$actionId',
+    path: '/action/$actionId',
+    getParentRoute: () => AppPatientRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/clinician': typeof AppClinicianRouteWithChildren
+  '/employer': typeof AppEmployerRouteWithChildren
+  '/navigator': typeof AppNavigatorRouteWithChildren
+  '/patient': typeof AppPatientRouteWithChildren
+  '/patient/chat': typeof AppPatientChatRoute
+  '/patient/profile': typeof AppPatientProfileRoute
+  '/patient/records': typeof AppPatientRecordsRoute
+  '/admin/': typeof AppAdminIndexRoute
+  '/clinician/': typeof AppClinicianIndexRoute
+  '/employer/': typeof AppEmployerIndexRoute
+  '/navigator/': typeof AppNavigatorIndexRoute
+  '/patient/': typeof AppPatientIndexRoute
+  '/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/patient/chat': typeof AppPatientChatRoute
+  '/patient/profile': typeof AppPatientProfileRoute
+  '/patient/records': typeof AppPatientRecordsRoute
+  '/admin': typeof AppAdminIndexRoute
+  '/clinician': typeof AppClinicianIndexRoute
+  '/employer': typeof AppEmployerIndexRoute
+  '/navigator': typeof AppNavigatorIndexRoute
+  '/patient': typeof AppPatientIndexRoute
+  '/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/clinician': typeof AppClinicianRouteWithChildren
+  '/_app/employer': typeof AppEmployerRouteWithChildren
+  '/_app/navigator': typeof AppNavigatorRouteWithChildren
+  '/_app/patient': typeof AppPatientRouteWithChildren
+  '/_app/patient/chat': typeof AppPatientChatRoute
+  '/_app/patient/profile': typeof AppPatientProfileRoute
+  '/_app/patient/records': typeof AppPatientRecordsRoute
+  '/_app/admin/': typeof AppAdminIndexRoute
+  '/_app/clinician/': typeof AppClinicianIndexRoute
+  '/_app/employer/': typeof AppEmployerIndexRoute
+  '/_app/navigator/': typeof AppNavigatorIndexRoute
+  '/_app/patient/': typeof AppPatientIndexRoute
+  '/_app/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/clinician'
+    | '/employer'
+    | '/navigator'
+    | '/patient'
+    | '/patient/chat'
+    | '/patient/profile'
+    | '/patient/records'
+    | '/admin/'
+    | '/clinician/'
+    | '/employer/'
+    | '/navigator/'
+    | '/patient/'
+    | '/patient/action/$actionId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/patient/chat'
+    | '/patient/profile'
+    | '/patient/records'
+    | '/admin'
+    | '/clinician'
+    | '/employer'
+    | '/navigator'
+    | '/patient'
+    | '/patient/action/$actionId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/_app/clinician'
+    | '/_app/employer'
+    | '/_app/navigator'
+    | '/_app/patient'
+    | '/_app/patient/chat'
+    | '/_app/patient/profile'
+    | '/_app/patient/records'
+    | '/_app/admin/'
+    | '/_app/clinician/'
+    | '/_app/employer/'
+    | '/_app/navigator/'
+    | '/_app/patient/'
+    | '/_app/patient/action/$actionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +236,189 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/patient': {
+      id: '/_app/patient'
+      path: '/patient'
+      fullPath: '/patient'
+      preLoaderRoute: typeof AppPatientRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/navigator': {
+      id: '/_app/navigator'
+      path: '/navigator'
+      fullPath: '/navigator'
+      preLoaderRoute: typeof AppNavigatorRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employer': {
+      id: '/_app/employer'
+      path: '/employer'
+      fullPath: '/employer'
+      preLoaderRoute: typeof AppEmployerRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/clinician': {
+      id: '/_app/clinician'
+      path: '/clinician'
+      fullPath: '/clinician'
+      preLoaderRoute: typeof AppClinicianRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/patient/': {
+      id: '/_app/patient/'
+      path: '/'
+      fullPath: '/patient/'
+      preLoaderRoute: typeof AppPatientIndexRouteImport
+      parentRoute: typeof AppPatientRoute
+    }
+    '/_app/navigator/': {
+      id: '/_app/navigator/'
+      path: '/'
+      fullPath: '/navigator/'
+      preLoaderRoute: typeof AppNavigatorIndexRouteImport
+      parentRoute: typeof AppNavigatorRoute
+    }
+    '/_app/employer/': {
+      id: '/_app/employer/'
+      path: '/'
+      fullPath: '/employer/'
+      preLoaderRoute: typeof AppEmployerIndexRouteImport
+      parentRoute: typeof AppEmployerRoute
+    }
+    '/_app/clinician/': {
+      id: '/_app/clinician/'
+      path: '/'
+      fullPath: '/clinician/'
+      preLoaderRoute: typeof AppClinicianIndexRouteImport
+      parentRoute: typeof AppClinicianRoute
+    }
+    '/_app/admin/': {
+      id: '/_app/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AppAdminIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/patient/records': {
+      id: '/_app/patient/records'
+      path: '/records'
+      fullPath: '/patient/records'
+      preLoaderRoute: typeof AppPatientRecordsRouteImport
+      parentRoute: typeof AppPatientRoute
+    }
+    '/_app/patient/profile': {
+      id: '/_app/patient/profile'
+      path: '/profile'
+      fullPath: '/patient/profile'
+      preLoaderRoute: typeof AppPatientProfileRouteImport
+      parentRoute: typeof AppPatientRoute
+    }
+    '/_app/patient/chat': {
+      id: '/_app/patient/chat'
+      path: '/chat'
+      fullPath: '/patient/chat'
+      preLoaderRoute: typeof AppPatientChatRouteImport
+      parentRoute: typeof AppPatientRoute
+    }
+    '/_app/patient/action/$actionId': {
+      id: '/_app/patient/action/$actionId'
+      path: '/action/$actionId'
+      fullPath: '/patient/action/$actionId'
+      preLoaderRoute: typeof AppPatientActionActionIdRouteImport
+      parentRoute: typeof AppPatientRoute
+    }
   }
 }
 
+interface AppClinicianRouteChildren {
+  AppClinicianIndexRoute: typeof AppClinicianIndexRoute
+}
+
+const AppClinicianRouteChildren: AppClinicianRouteChildren = {
+  AppClinicianIndexRoute: AppClinicianIndexRoute,
+}
+
+const AppClinicianRouteWithChildren = AppClinicianRoute._addFileChildren(
+  AppClinicianRouteChildren,
+)
+
+interface AppEmployerRouteChildren {
+  AppEmployerIndexRoute: typeof AppEmployerIndexRoute
+}
+
+const AppEmployerRouteChildren: AppEmployerRouteChildren = {
+  AppEmployerIndexRoute: AppEmployerIndexRoute,
+}
+
+const AppEmployerRouteWithChildren = AppEmployerRoute._addFileChildren(
+  AppEmployerRouteChildren,
+)
+
+interface AppNavigatorRouteChildren {
+  AppNavigatorIndexRoute: typeof AppNavigatorIndexRoute
+}
+
+const AppNavigatorRouteChildren: AppNavigatorRouteChildren = {
+  AppNavigatorIndexRoute: AppNavigatorIndexRoute,
+}
+
+const AppNavigatorRouteWithChildren = AppNavigatorRoute._addFileChildren(
+  AppNavigatorRouteChildren,
+)
+
+interface AppPatientRouteChildren {
+  AppPatientChatRoute: typeof AppPatientChatRoute
+  AppPatientProfileRoute: typeof AppPatientProfileRoute
+  AppPatientRecordsRoute: typeof AppPatientRecordsRoute
+  AppPatientIndexRoute: typeof AppPatientIndexRoute
+  AppPatientActionActionIdRoute: typeof AppPatientActionActionIdRoute
+}
+
+const AppPatientRouteChildren: AppPatientRouteChildren = {
+  AppPatientChatRoute: AppPatientChatRoute,
+  AppPatientProfileRoute: AppPatientProfileRoute,
+  AppPatientRecordsRoute: AppPatientRecordsRoute,
+  AppPatientIndexRoute: AppPatientIndexRoute,
+  AppPatientActionActionIdRoute: AppPatientActionActionIdRoute,
+}
+
+const AppPatientRouteWithChildren = AppPatientRoute._addFileChildren(
+  AppPatientRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppClinicianRoute: typeof AppClinicianRouteWithChildren
+  AppEmployerRoute: typeof AppEmployerRouteWithChildren
+  AppNavigatorRoute: typeof AppNavigatorRouteWithChildren
+  AppPatientRoute: typeof AppPatientRouteWithChildren
+  AppAdminIndexRoute: typeof AppAdminIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppClinicianRoute: AppClinicianRouteWithChildren,
+  AppEmployerRoute: AppEmployerRouteWithChildren,
+  AppNavigatorRoute: AppNavigatorRouteWithChildren,
+  AppPatientRoute: AppPatientRouteWithChildren,
+  AppAdminIndexRoute: AppAdminIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
