@@ -34,21 +34,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq('id', userId)
       .single()
     setProfile(data)
+    setLoading(false)
   }
 
   useEffect(() => {
     let subscription: { unsubscribe: () => void } | null = null
     try {
-      const { data } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      // Intentionally synchronous callback — supabase-js v2 awaits async onAuthStateChange
+      // listeners before resolving signInWithPassword, which causes a 12 s timeout if the
+      // profiles DB query is slow. Fire-and-forget fetchProfile; loading stays true until it
+      // resolves, so router guards keep showing the spinner rather than redirecting to /login.
+      const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
         setSession(newSession)
         if (newSession?.user) {
-          await fetchProfile(newSession.user.id)
+          void fetchProfile(newSession.user.id)
         } else {
           setProfile(null)
           setViewAsState(null)
           if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
+          setLoading(false)
         }
-        setLoading(false)
       })
       subscription = data.subscription
     } catch (err) {
