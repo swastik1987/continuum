@@ -88,3 +88,24 @@ export async function updateActionStatus(
     .update({ status, decline_reason: opts?.declineReason ?? null })
     .eq('id', actionId)
 }
+
+export async function scheduleAction(actionId: string): Promise<void> {
+  await supabase
+    .from('care_plan_actions')
+    .update({ status: 'scheduled' })
+    .eq('id', actionId)
+}
+
+type ConsultationWithProvider = ConsultationRow & {
+  provider: { full_name: string; specialty: string | null } | null
+}
+
+export async function listConsultationsForMember(memberId: string): Promise<ConsultationWithProvider[]> {
+  const { data } = await supabase
+    .from('consultations')
+    .select('*, provider:providers(full_name, specialty)')
+    .eq('member_id', memberId)
+    .order('consulted_at', { ascending: false })
+
+  return (data ?? []) as ConsultationWithProvider[]
+}

@@ -57,7 +57,8 @@ function StatusBadge({ action }: { action: ActionRow }) {
         flexShrink: 0,
       }}
     >
-      Pending
+      <span style={{ width: 5, height: 5, borderRadius: 99, background: '#64748B', display: 'inline-block' }} />
+      Due soon
     </span>
   )
 }
@@ -262,7 +263,7 @@ export function ActionCard({ action, onOpen }: Props) {
                     alignItems: 'center',
                     gap: 5,
                     padding: '3px 8px',
-                    borderRadius: 99,
+                    borderRadius: 7,
                     background: '#EDF4F3',
                     border: '1px solid #CFE6E1',
                     color: '#0B6F64',

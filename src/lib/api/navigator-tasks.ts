@@ -62,3 +62,18 @@ export async function updateTaskStatus(
     })
     .eq('id', taskId)
 }
+
+export async function createNavigatorTask(
+  memberId: string,
+  triggerReason: Enums<'task_reason'>,
+  priority: Enums<'task_priority'>,
+  notes?: string,
+): Promise<void> {
+  await supabase.from('navigator_tasks').insert({
+    member_id: memberId,
+    trigger_reason: triggerReason,
+    priority,
+    status: 'open',
+    notes: notes ?? null,
+  })
+}

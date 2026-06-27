@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { MessagesSquare, ChevronRight, PartyPopper } from 'lucide-react'
+import { MessagesSquare, ChevronRight, Check, PartyPopper } from 'lucide-react'
 import { format } from 'date-fns'
 import { useAuth } from '@/lib/auth/context'
 import { getMemberByProfileId, getActivePlanForMember } from '@/lib/api'
@@ -201,21 +201,62 @@ export function CarePlanHome() {
       {allDone ? (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            padding: '32px 20px',
+            background: '#fff',
+            border: '1px solid #EDEBE6',
+            borderRadius: 18,
+            padding: '38px 24px',
+            boxShadow: '0 1px 2px rgba(19,35,58,.04)',
             textAlign: 'center',
+            marginBottom: 14,
           }}
         >
-          <PartyPopper size={36} strokeWidth={1.5} color="#0E8C7F" />
-          <div style={{ fontSize: 17, fontWeight: 600, color: '#13233A', marginTop: 4 }}>
-            All care steps complete
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 99,
+              background: '#E6F4EC',
+              color: '#1F9D55',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 18px',
+            }}
+          >
+            <Check size={30} strokeWidth={2} />
           </div>
-          <div style={{ fontSize: 13.5, color: '#5A6B80', maxWidth: 240 }}>
-            Your care team will review and may add new steps at your next consultation.
+          <div style={{ fontSize: 16.5, fontWeight: 600, letterSpacing: '-0.01em', color: '#13233A' }}>
+            No pending steps
+          </div>
+          <div
+            style={{
+              fontSize: 13.5,
+              color: '#5A6B80',
+              lineHeight: 1.5,
+              marginTop: 7,
+              maxWidth: 240,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            You're all caught up. We'll let you know when Dr. Mehra adds something new.
+          </div>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 7,
+              marginTop: 18,
+              padding: '8px 14px',
+              borderRadius: 999,
+              background: '#E6F4EC',
+              color: '#167A41',
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            <PartyPopper size={16} strokeWidth={1.75} />
+            All caught up
           </div>
         </div>
       ) : (
