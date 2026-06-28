@@ -261,6 +261,7 @@ export function DemoSimulation() {
       queryClient.invalidateQueries({ queryKey: ['members'] })
       queryClient.invalidateQueries({ queryKey: ['navigator-tasks'] })
       queryClient.invalidateQueries({ queryKey: ['care-plan-actions'] })
+      queryClient.invalidateQueries({ queryKey: ['employer:stats'] })
     } finally {
       setLoading(false)
       pendingAdvance.current = false
@@ -305,6 +306,7 @@ export function DemoSimulation() {
       queryClient.invalidateQueries({ queryKey: ['members'] })
       queryClient.invalidateQueries({ queryKey: ['navigator-tasks'] })
       queryClient.invalidateQueries({ queryKey: ['care-plan-actions'] })
+      queryClient.invalidateQueries({ queryKey: ['employer:stats'] })
     }
   }, [queryClient])
 
