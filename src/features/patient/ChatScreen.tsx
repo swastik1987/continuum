@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { format, isToday, isYesterday } from 'date-fns'
 import {
   ChevronLeft, Phone, MoreVertical, Info,
-  CalendarCheck, HelpCircle, CheckCheck, Loader, Plus, Smile, Send,
+  CalendarCheck, CircleHelp, CheckCheck, LoaderCircle, Plus, Smile, Send,
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useMember } from '@/lib/hooks/useMember'
@@ -178,7 +178,7 @@ function HandoffPill({ msg }: { msg: MessageRow }) {
         padding: '7px 15px', borderRadius: 999,
         background: '#EEF1F5', border: '1px solid #DEE4EC',
       }}>
-        <Loader size={13} color="#64748B" />
+        <LoaderCircle size={13} color="#64748B" />
         <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{label}</span>
       </div>
     </div>
@@ -192,7 +192,7 @@ function ContextualChips({ onSend }: { onSend: (text: string) => void }) {
         <CalendarCheck size={15} /> Book now
       </button>
       <button style={CHIP_STYLE} onClick={() => onSend('I have a question')}>
-        <HelpCircle size={15} /> I have a question
+        <CircleHelp size={15} /> I have a question
       </button>
     </div>
   )
