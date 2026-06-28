@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import {
   GitMerge, Play, ChevronsRight, PlayCircle, Pause, RotateCcw,
   BellRing, CircleCheckBig, Route, TrendingUp, GitCommitHorizontal,
-  CheckCheck, User, Compass, Stethoscope, Building2, Activity,
+  CheckCheck, User, Compass, Stethoscope, Building2, Activity, LogOut,
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/lib/auth/context'
@@ -163,7 +163,7 @@ function buildEntries(day: DayActivity, isSummary: boolean, getId: () => number)
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export function DemoSimulation() {
-  const { effectiveRole, setViewAs } = useAuth()
+  const { effectiveRole, setViewAs, signOut } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -388,19 +388,34 @@ export function DemoSimulation() {
             </div>
           </div>
 
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: '7px',
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 500,
-            letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: '#167A41', background: '#E6F4EC', border: '1px solid #D2EBDC',
-            padding: '5px 10px 5px 8px', borderRadius: '999px', flexShrink: 0,
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
             <span style={{
-              width: '7px', height: '7px', borderRadius: '99px', background: '#1F9D55',
-              animation: 'livePulse 1.8s infinite',
-            }} />
-            Live
-          </span>
+              display: 'inline-flex', alignItems: 'center', gap: '7px',
+              fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', fontWeight: 500,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: '#167A41', background: '#E6F4EC', border: '1px solid #D2EBDC',
+              padding: '5px 10px 5px 8px', borderRadius: '999px',
+            }}>
+              <span style={{
+                width: '7px', height: '7px', borderRadius: '99px', background: '#1F9D55',
+                animation: 'livePulse 1.8s infinite',
+              }} />
+              Live
+            </span>
+            <button
+              onClick={() => void signOut()}
+              title="Sign out"
+              style={{
+                fontFamily: 'inherit', width: '32px', height: '32px',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                background: '#fff', color: '#A2AAB4',
+                border: '1px solid #EDEBE6', borderRadius: '8px',
+                cursor: 'pointer',
+              }}
+            >
+              <LogOut size={15} strokeWidth={1.75} />
+            </button>
+          </div>
         </div>
 
         {/* ── DAY + ADVANCE ─────────────────────────────────────────────────── */}

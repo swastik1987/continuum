@@ -4,9 +4,10 @@ import {
   Cloud, Eye, Send, ClipboardList, Video, Stethoscope,
   FlaskConical, Pill, Syringe, HeartPulse, Activity,
   ChevronsUpDown, Trash2, Plus, Calendar, ShieldCheck,
-  Sparkles, Check, X, Smartphone, Lock,
+  Sparkles, Check, X, Smartphone, Lock, LogOut,
 } from 'lucide-react'
 import type { Enums } from '@/lib/database.types'
+import { useAuth } from '@/lib/auth/context'
 import {
   listConsultations,
   getActivePlanForMember,
@@ -504,6 +505,7 @@ function PatientPreview({
 // ── Main component ─────────────────────────────────────────────────────────
 
 export function CarePlanBuilder() {
+  const { signOut } = useAuth()
   const [loading, setLoading] = useState(true)
   const [planResult, setPlanResult] = useState<ActivePlanResult | null>(null)
   const [consultation, setConsultation] = useState<ConsultationWithMeta | null>(null)
@@ -682,6 +684,13 @@ export function CarePlanBuilder() {
             style={{ fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0E8C7F', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 18px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 2px rgba(14,140,127,.3)' }}
           >
             <Send size={16} strokeWidth={1.75} /> Publish care plan
+          </button>
+          <button
+            onClick={() => void signOut()}
+            title="Sign out"
+            style={{ fontFamily: 'inherit', width: '38px', height: '38px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#fff', color: '#A2AAB4', border: '1px solid #E4E2DD', borderRadius: '10px', cursor: 'pointer' }}
+          >
+            <LogOut size={16} strokeWidth={1.75} />
           </button>
         </div>
       </header>

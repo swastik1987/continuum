@@ -7,7 +7,7 @@ import {
   Search,
   ClipboardList,
   BarChart2,
-  Settings,
+  LogOut,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth/context'
 import type { Enums } from '@/lib/database.types'
@@ -56,7 +56,7 @@ export function WebShell({
   children: ReactNode
   navBadges?: Record<string, number>
 }) {
-  const { profile } = useAuth()
+  const { profile, signOut } = useAuth()
   const items = NAV_ITEMS[role]
   const initials = profile?.full_name
     ? profile.full_name
@@ -269,11 +269,18 @@ export function WebShell({
                 {ROLE_LABEL[role]}
               </div>
             </div>
-            <Settings
-              size={17}
-              strokeWidth={1.75}
-              style={{ color: '#A2AAB4', cursor: 'pointer', flexShrink: 0 }}
-            />
+            <button
+              onClick={() => void signOut()}
+              title="Sign out"
+              style={{
+                fontFamily: 'inherit', background: 'none', border: 'none',
+                padding: '4px', borderRadius: '6px', cursor: 'pointer',
+                color: '#A2AAB4', display: 'flex', alignItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <LogOut size={17} strokeWidth={1.75} />
+            </button>
           </div>
         </div>
       </aside>
