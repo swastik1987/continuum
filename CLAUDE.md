@@ -23,7 +23,7 @@ This is a **demo prototype for evaluation**, not production. Optimize for a cris
 ## Tech stack
 - **Frontend:** React + Vite + TypeScript + Tailwind + shadcn/ui, React Router, TanStack Query, Supabase JS client. Recharts for dashboard charts.
 - **Backend:** Supabase — Postgres + RLS + Edge Functions (Deno) + Realtime.
-- **LLM (optional):** Anthropic API via Edge Function, key in Supabase secrets. **Must degrade gracefully** to scripted behaviour if no key — the demo must never break on a missing key.
+- **LLM (optional):** Gemini API (Google) via Edge Function, key in Supabase secrets (`GEMINI_API_KEY`). Model: `gemini-2.0-flash`. **Must degrade gracefully** to scripted behaviour if no key — the demo must never break on a missing key.
 - **Source of truth for schema:** the migration already applied via Lovable (see `02-lovable-setup-prompt.md`). Evolve it with new migration files under `supabase/migrations/`.
 
 ## Architecture
@@ -40,8 +40,8 @@ This is a **demo prototype for evaluation**, not production. Optimize for a cris
   - `run-nudge-engine` — for the current day, evaluate due/overdue actions; pick channel + template per segment; **enforce suppression rules**; insert `nudges` + patient-facing `messages`.
   - `compute-risk` — rules-based risk scoring → `members.risk_tier/risk_score/risk_drivers`.
   - `close-loop` — match `clinical_events` to open `care_plan_actions` (by member + action_type + recency) and mark `completed`, setting `completed_via_event_id`. (May also be a DB trigger; pick one and document it.)
-  - `conversational-reply` *(optional, Claude)* — respond to a member chat message; scripted fallback.
-  - `suggest-actions` *(optional, Claude)* — from a consult summary, propose candidate actions as `system_suggested`; rules-based fallback.
+  - `conversational-reply` *(optional, Gemini)* — respond to a member chat message; scripted fallback.
+  - `suggest-actions` *(optional, Gemini)* — from a consult summary, propose candidate actions as `system_suggested`; rules-based fallback.
 
 ## Conventions
 - TypeScript strict. Functional components + hooks. Co-locate by feature: `src/features/{patient,navigator,clinician,employer,demo}/`.
@@ -55,7 +55,7 @@ You (Claude Code) **author** everything but **do not deploy or touch the databas
 - **App code & edge functions:** you write them and push to GitHub. **Lovable syncs and deploys** both the app and the Supabase edge functions. Do not run `supabase functions deploy`.
 - **SQL / schema:** you write every schema change as a numbered SQL migration file under `supabase/migrations/` (e.g. `001_init.sql` = the existing `schema-migration.sql`, `002_...sql`, etc.). **The user runs these by hand in the Lovable SQL Editor.** Never assume you can apply SQL yourself. When a milestone needs a migration, say clearly: *"Run `supabase/migrations/00X_name.sql` in the Lovable SQL Editor now, before continuing."*
 - **Types:** generate `src/lib/database.types.ts` **by hand from the schema you authored** (it's deterministic from your migration SQL). Do not rely on `supabase gen types`.
-- **Edge function env:** Supabase **auto-injects** `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` into deployed functions — use `Deno.env.get(...)`, no manual setup. The only manually-set secret is `ANTHROPIC_API_KEY` (user sets it in the Supabase dashboard → Edge Functions → Secrets); functions must run without it via scripted fallback.
+- **Edge function env:** Supabase **auto-injects** `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` into deployed functions — use `Deno.env.get(...)`, no manual setup. The only manually-set secret is `GEMINI_API_KEY` (user sets it in the Supabase dashboard → Edge Functions → Secrets); functions must run without it via scripted fallback.
 
 ## Commands
 - `npm run dev` — local dev

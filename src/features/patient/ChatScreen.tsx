@@ -54,6 +54,28 @@ function pickAutoReply(body: string): string {
   return "Got it — Priya from your care team will follow up with you shortly. 🙏"
 }
 
+// ── Typing bubble ─────────────────────────────────────────────────────────────
+
+function TypingBubble() {
+  return (
+    <>
+      <style>{`@keyframes tdot{0%,80%,100%{opacity:.3}40%{opacity:1}}`}</style>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', maxWidth: '88%' }}>
+        <div style={{ marginBottom: 2 }}>
+          <ContinuumRing size={28} />
+        </div>
+        <div style={{ background: '#fff', borderRadius: '16px 16px 16px 4px', padding: '14px 16px', boxShadow: '0 1px 1px rgba(19,35,58,.07)' }}>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: 14 }}>
+            {[0, 0.18, 0.36].map((delay, i) => (
+              <span key={i} style={{ width: 7, height: 7, borderRadius: 99, background: '#B0BCCA', display: 'inline-block', animation: `tdot 1.4s ease-in-out ${delay}s infinite` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ── Shared style ──────────────────────────────────────────────────────────────
 
 const CHIP_STYLE: CSSProperties = {
@@ -237,6 +259,7 @@ export function ChatScreen() {
   const queryClient = useQueryClient()
   const threadRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
 
   const { data: member } = useMember()
   const memberId = member?.id
@@ -261,26 +284,37 @@ export function ChatScreen() {
     return () => { void supabase.removeChannel(channel) }
   }, [memberId, queryClient])
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages or when typing indicator appears
   useEffect(() => {
     if (threadRef.current) {
       threadRef.current.scrollTop = threadRef.current.scrollHeight
     }
-  }, [messages.length])
+  }, [messages.length, isTyping])
 
   const sendMessage = async (body: string) => {
     const trimmed = body.trim()
     if (!memberId || !trimmed) return
     setInputValue('')
+    setIsTyping(true)
 
     await insertMessage({ member_id: memberId, sender: 'member', channel: 'app', body: trimmed })
     queryClient.invalidateQueries({ queryKey: ['messages', memberId] })
 
-    setTimeout(async () => {
+    try {
+      const { error } = await supabase.functions.invoke('conversational-reply', {
+        body: { member_id: memberId, message: trimmed },
+      })
+      if (error) throw error
+      // Realtime subscription updates messages; also invalidate for safety
+      queryClient.invalidateQueries({ queryKey: ['messages', memberId] })
+    } catch {
+      // Fallback: local scripted reply
       const reply = pickAutoReply(trimmed)
       await insertMessage({ member_id: memberId, sender: 'navigator', channel: 'app', body: reply })
       queryClient.invalidateQueries({ queryKey: ['messages', memberId] })
-    }, 1500)
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   const grouped = groupByDay(messages)
@@ -368,6 +402,8 @@ export function ChatScreen() {
             })}
           </Fragment>
         ))}
+
+        {isTyping && <TypingBubble />}
 
         {!memberId && (
           <div style={{ alignSelf: 'center', fontSize: 13, color: '#A2AAB4', marginTop: 48 }}>

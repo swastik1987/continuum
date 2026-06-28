@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 import {
   Cloud, Eye, Send, ClipboardList, Video, Stethoscope,
   FlaskConical, Pill, Syringe, HeartPulse, Activity,
@@ -452,6 +453,13 @@ export function CarePlanBuilder() {
       setConsultation(consult)
 
       if (consult?.member?.id) {
+        // Ensure system_suggested rows exist in DB before loading the plan
+        if (consult.id) {
+          await supabase.functions.invoke('suggest-actions', {
+            body: { consultation_id: consult.id },
+          })
+        }
+
         const result = await getActivePlanForMember(consult.member.id)
         setPlanResult(result)
         if (result) {
@@ -532,6 +540,9 @@ export function CarePlanBuilder() {
 
   function handleDismiss(id: string) {
     setSuggestions((prev) => prev.filter((s) => s.id !== id))
+    if (!id.startsWith('static-') && !id.startsWith('new-')) {
+      void deleteCarePlanAction(id)
+    }
   }
 
   async function handlePublish() {
