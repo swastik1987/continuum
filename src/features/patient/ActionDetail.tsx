@@ -20,8 +20,8 @@ import {
   Clock,
 } from 'lucide-react'
 import { format, addDays } from 'date-fns'
-import { useAuth } from '@/lib/auth/context'
-import { getAction, scheduleAction, updateActionStatus, getMemberByProfileId } from '@/lib/api'
+import { getAction, scheduleAction, updateActionStatus } from '@/lib/api'
+import { useMember } from '@/lib/hooks/useMember'
 import { createBookingEvent } from '@/lib/api/clinical-events'
 import { createNavigatorTask } from '@/lib/api/navigator-tasks'
 import { ACTION_ICON, ACTION_SUBTITLE, actionIconStyle } from './actionConfig'
@@ -39,7 +39,6 @@ interface Props {
 }
 
 export function ActionDetail({ actionId }: Props) {
-  const { profile } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -57,11 +56,7 @@ export function ActionDetail({ actionId }: Props) {
     enabled: !!actionId,
   })
 
-  const { data: member } = useQuery({
-    queryKey: ['member', profile?.id],
-    queryFn: () => getMemberByProfileId(profile!.id),
-    enabled: !!profile,
-  })
+  const { data: member } = useMember()
 
   const simDay = new Date()
   const slots =

@@ -7,8 +7,7 @@ import {
   CalendarCheck, HelpCircle, CheckCheck, Loader, Plus, Smile, Send,
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/lib/auth/context'
-import { getMemberByProfileId } from '@/lib/api/members'
+import { useMember } from '@/lib/hooks/useMember'
 import { listMessages, insertMessage } from '@/lib/api/messages'
 import type { MessageRow } from '@/lib/api/messages'
 
@@ -234,18 +233,12 @@ function MessageItem({ msg, showChips, onChipSend }: MessageItemProps) {
 // ── Main screen ───────────────────────────────────────────────────────────────
 
 export function ChatScreen() {
-  const { profile } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const threadRef = useRef<HTMLDivElement>(null)
   const [inputValue, setInputValue] = useState('')
 
-  const { data: member } = useQuery({
-    queryKey: ['member:byProfile', profile?.id],
-    queryFn: () => getMemberByProfileId(profile!.id),
-    enabled: !!profile?.id,
-    staleTime: Infinity,
-  })
+  const { data: member } = useMember()
   const memberId = member?.id
 
   const { data: messages = [] } = useQuery({

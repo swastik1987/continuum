@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CheckCircle2, Stethoscope, Droplet, Pill, Syringe, HeartPulse, Scan, FlaskConical } from 'lucide-react'
-import { useAuth } from '@/lib/auth/context'
-import { getMemberByProfileId, getActivePlanForMember, listConsultationsForMember } from '@/lib/api'
+import { getActivePlanForMember, listConsultationsForMember } from '@/lib/api'
+import { useMember } from '@/lib/hooks/useMember'
 
 export const Route = createFileRoute('/_app/patient/records')({
   component: PatientRecords,
@@ -19,13 +19,7 @@ const ACTION_ICON: Record<string, React.ComponentType<{ size: number; strokeWidt
 }
 
 function PatientRecords() {
-  const { profile } = useAuth()
-
-  const { data: member, isLoading: loadingMember } = useQuery({
-    queryKey: ['member', profile?.id],
-    queryFn: () => getMemberByProfileId(profile!.id),
-    enabled: !!profile,
-  })
+  const { data: member, isLoading: loadingMember } = useMember()
 
   const { data: planResult, isLoading: loadingPlan } = useQuery({
     queryKey: ['active-plan', member?.id],

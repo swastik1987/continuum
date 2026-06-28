@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { MessagesSquare, ChevronRight, Check, PartyPopper } from 'lucide-react'
 import { format } from 'date-fns'
-import { useAuth } from '@/lib/auth/context'
-import { getMemberByProfileId, getActivePlanForMember } from '@/lib/api'
+import { getActivePlanForMember } from '@/lib/api'
+import { useMember } from '@/lib/hooks/useMember'
 import type { ActionRow } from '@/lib/api/care-plans'
 import type { Enums } from '@/lib/database.types'
 import { ProgressRing } from './ProgressRing'
@@ -25,14 +25,8 @@ function sortActions(actions: ActionRow[]): ActionRow[] {
 }
 
 export function CarePlanHome() {
-  const { profile } = useAuth()
   const navigate = useNavigate()
-
-  const { data: member, isLoading: loadingMember } = useQuery({
-    queryKey: ['member', profile?.id],
-    queryFn: () => getMemberByProfileId(profile!.id),
-    enabled: !!profile,
-  })
+  const { data: member, isLoading: loadingMember } = useMember()
 
   const { data: planResult, isLoading: loadingPlan } = useQuery({
     queryKey: ['active-plan', member?.id],
