@@ -52,6 +52,36 @@ const C = {
   teal:  { bg: '#EDF4F3', bd: '#CFE6E1', fg: '#0B6F64' },
 }
 
+// ── Feed persistence ──────────────────────────────────────────────────────────
+type StoredFeed = {
+  events: Omit<FeedEntry, 'Icon'>[]
+  nudged: number
+  closed: number
+  routed: number
+  nextId: number
+}
+
+const ICON_BY_KIND: Record<FeedKind, ComponentType<{ size?: number; strokeWidth?: number }>> = {
+  nudge:   BellRing,
+  closed:  CircleCheckBig,
+  routed:  Route,
+  er:      Activity,
+  high:    TrendingUp,
+  summary: CheckCheck,
+}
+
+const FEED_KEY = 'continuum.simFeed'
+
+function loadSimFeed(): StoredFeed {
+  try {
+    const raw = localStorage.getItem(FEED_KEY)
+    if (!raw) return { events: [], nudged: 0, closed: 0, routed: 0, nextId: 1 }
+    return JSON.parse(raw) as StoredFeed
+  } catch {
+    return { events: [], nudged: 0, closed: 0, routed: 0, nextId: 1 }
+  }
+}
+
 // ── Role switcher rows ────────────────────────────────────────────────────────
 const SWITCH_ROLES: {
   label: string
@@ -140,17 +170,20 @@ export function DemoSimulation() {
   const [currentDay,  setCurrentDay]  = useState('2026-06-14')
   const [timestamp,   setTimestamp]   = useState(fmtTimestamp)
   const [simReady,    setSimReady]    = useState(false)
-  const [events,      setEvents]      = useState<FeedEntry[]>([])
-  const [nudged,      setNudged]      = useState(0)
-  const [closed,      setClosed]      = useState(0)
-  const [routed,      setRouted]      = useState(0)
+  const [feedInit]                    = useState(loadSimFeed)
+  const [events,      setEvents]      = useState<FeedEntry[]>(
+    () => feedInit.events.map(e => ({ ...e, Icon: ICON_BY_KIND[e.kind] }))
+  )
+  const [nudged,      setNudged]      = useState(feedInit.nudged)
+  const [closed,      setClosed]      = useState(feedInit.closed)
+  const [routed,      setRouted]      = useState(feedInit.routed)
   const [loading,     setLoading]     = useState(false)
   const [playing,     setPlaying]     = useState(false)
 
   const sessionStartedAt = useRef<string | null>(null)
   const pendingAdvance   = useRef(false)
   const playInterval     = useRef<ReturnType<typeof setInterval> | null>(null)
-  const nextEventId      = useRef(1)
+  const nextEventId      = useRef(feedInit.nextId)
 
   // Load initial sim day from DB
   useEffect(() => {
@@ -170,6 +203,18 @@ export function DemoSimulation() {
   useEffect(() => {
     return () => { if (playInterval.current) clearInterval(playInterval.current) }
   }, [])
+
+  // Persist feed across navigation — restore when admin returns to this page
+  useEffect(() => {
+    const stored: StoredFeed = {
+      events: events.map(({ Icon: _icon, ...rest }) => rest),
+      nudged,
+      closed,
+      routed,
+      nextId: nextEventId.current,
+    }
+    localStorage.setItem(FEED_KEY, JSON.stringify(stored))
+  }, [events, nudged, closed, routed])
 
   const advance = useCallback(async (days: number) => {
     if (pendingAdvance.current) return
@@ -248,6 +293,7 @@ export function DemoSimulation() {
     } finally {
       sessionStartedAt.current = null
       nextEventId.current = 1
+      localStorage.removeItem(FEED_KEY)
       setCurrentDay('2026-06-14')
       setEvents([])
       setNudged(0)
