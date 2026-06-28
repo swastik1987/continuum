@@ -112,10 +112,10 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'member_id and message required' }, { headers: corsHeaders })
     }
 
-    // Load member context
+    // Load member context including demographics for personalised responses
     const { data: member } = await supabase
       .from('members')
-      .select('full_name, drop_segment, risk_tier')
+      .select('full_name, drop_segment, risk_tier, dob, gender')
       .eq('id', member_id)
       .single()
 
@@ -140,6 +140,14 @@ Deno.serve(async (req) => {
     const firstName = member?.full_name?.split(' ')[0] ?? 'there'
     const segment = member?.drop_segment ?? 'none'
 
+    // Compute age from dob relative to today (sim-time agnostic — use wall clock for demographics)
+    const age = member?.dob
+      ? Math.floor(
+          (Date.now() - new Date(member.dob).getTime()) / (365.25 * 24 * 60 * 60 * 1000),
+        )
+      : null
+    const gender = member?.gender ?? null
+
     const actionSummary = (actions ?? [])
       .map((a) => `• ${a.title} (${a.clinical_priority}, ${a.status}, due ${a.due_date ?? 'TBD'}): "${a.why_plain ?? ''}"`)
       .join('\n')
@@ -151,28 +159,38 @@ Deno.serve(async (req) => {
     let reply: string
     let handoff: boolean
 
+    const demographicsCtx = [
+      age !== null ? `${age} years` : null,
+      gender ?? null,
+    ]
+      .filter(Boolean)
+      .join(', ')
+
     const geminiReply = await callGemini(
-      `You are a warm, concise care assistant for Connect & Heal's Continuum platform.
+      `Act as an experienced patient care coordinator and health educator at Connect & Heal, a care continuity platform. Your role is to translate care plan steps into plain language, help patients prepare for their next appointments, and connect them to human navigators when needed — you NEVER diagnose, prescribe, or give clinical advice.
 
-RULES (strictly follow):
-- Warm and human, 2-3 sentences max
-- Never coercive, never guilt-trip; acknowledge feelings first
-- If member signals cost worry, avoidance, fear, or wants to talk to a human → offer to connect to a care navigator
-- Mention the plain-language "why" only if directly relevant
-- Never give clinical advice beyond the care plan
-- If connecting to a human navigator, start your reply with "— Connecting you to Priya"
+PATIENT PROFILE:
+- Name: ${firstName}${demographicsCtx ? ` · ${demographicsCtx}` : ''}
+- Behaviour segment: ${segment}
+- Risk level: ${member?.risk_tier ?? 'unknown'}
 
-Member: ${firstName} | Behaviour segment: ${segment}
+CURRENT CARE PLAN (open actions):
+${actionSummary || '(no open actions currently)'}
 
-Open care plan actions:
-${actionSummary || '(none currently open)'}
+RECENT CONVERSATION:
+${conversationCtx || '(this is the first message)'}
 
-Recent conversation:
-${conversationCtx || '(first message)'}
+PATIENT MESSAGE: "${message}"
 
-Member said: "${message}"
+STRICT GUARDRAILS (follow all):
+1. Translator / Prep Assistant role only — translate medical steps to plain English, help patient prepare questions for their doctor; NEVER diagnose or prescribe
+2. 2–3 sentences max; warm, empathetic, non-coercive; acknowledge feelings before information
+3. If the patient mentions new or worsening symptoms: acknowledge with empathy, then gently encourage them to note what triggers it, what it feels like, how severe (1–10), and when it started — so their care team has full context. Do NOT interpret or diagnose symptoms yourself
+4. If patient signals cost concern, fear, avoidance, or requests a human → offer to connect to care navigator Priya
+5. If connecting to navigator → start reply with "— Connecting you to Priya"
+6. Never guilt-trip or pressure; declining any action is always respected
 
-Reply (2-3 sentences, warm and human):`,
+Reply (2–3 sentences, warm, safe-actions framing):`,
     )
 
     if (geminiReply && geminiReply.length > 0) {

@@ -232,23 +232,63 @@ Deno.serve(async (req) => {
       return Response.json({ ok: true, suggestions: existing, source: 'cached' }, { headers: corsHeaders })
     }
 
+    // Load member demographics for richer clinical context
+    const { data: memberData } = consult.member_id
+      ? await supabase
+          .from('members')
+          .select('full_name, dob, gender')
+          .eq('id', consult.member_id)
+          .single()
+      : { data: null }
+
+    const age = memberData?.dob
+      ? Math.floor(
+          (new Date(currentDay).getTime() - new Date(memberData.dob).getTime()) /
+            (365.25 * 24 * 60 * 60 * 1000),
+        )
+      : null
+    const genderLabel = memberData?.gender ?? null
+
     // Generate suggestions via Gemini or keyword fallback
     const chief = consult.chief_complaint ?? ''
     const summary = consult.summary ?? ''
     let rawSuggestions: RawSuggestion[] = []
 
+    const patientContext = [
+      age !== null ? `Age: ${age} years` : null,
+      genderLabel ? `Sex: ${genderLabel}` : null,
+    ]
+      .filter(Boolean)
+      .join(' | ')
+
     const geminiResult = await callGemini(
-      `You are a clinical decision support tool. A doctor just finished a patient consultation. Propose 1-3 follow-up care plan actions for the clinician to review and authorise.
+      `Act as a senior internal medicine physician and clinical decision support specialist with expertise in preventive care and chronic disease management. A treating clinician has just completed a patient consultation and needs 1–3 evidence-based follow-up actions to add to the patient's care plan. Your suggestions will be reviewed and authorised by the clinician before reaching the patient — you are NOT making final clinical decisions.
+
+Patient profile:
+${patientContext || '(demographics not available)'}
 
 Consultation:
-Chief complaint: ${chief}
-Clinical notes: ${summary}
+- Chief complaint: ${chief}
+- Clinical notes / findings: ${summary}
+
+When reviewing the above, consider the PQRST dimensions of the presentation:
+- P (Provokes/Palliates): what triggers or worsens the condition?
+- Q (Quality): character of symptoms described?
+- R (Radiates): any systemic or referred involvement?
+- S (Severity): functional impact or lab values indicating severity?
+- T (Timing): acute onset vs chronic vs episodic pattern?
+
+Your task (safe-action framing — educate and prepare, never diagnose):
+- Suggest evidence-based follow-up tests, consults, lifestyle steps, or medications clinically indicated for this presentation
+- Write each "why_plain" as a mechanism-explainer for a non-medical patient (1–2 sentences, plain English, no clinical jargon — explain the biological or practical reason this step matters)
+- Prioritise actions where earlier intervention prevents worse downstream outcomes
+- Do NOT include the diagnosis itself as an action — only follow-up actions
 
 Return ONLY a JSON array (no markdown, no explanation outside the array). Each item:
 {
   "action_type": one of exactly ["lab_test","follow_up_consult","medication","vaccination","lifestyle","imaging"],
-  "title": "concise action title",
-  "why_plain": "plain-language reason the patient will read (1-2 sentences, no jargon)",
+  "title": "concise action title (max 8 words)",
+  "why_plain": "plain-language mechanism-explainer the patient will read (1-2 sentences, no jargon)",
   "suggested_priority": one of exactly ["mandatory","recommended","optional"],
   "due_offset_days": integer between 3 and 30
 }
