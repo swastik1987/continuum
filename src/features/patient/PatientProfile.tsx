@@ -266,7 +266,7 @@ export function PatientProfile() {
                   <div style={{
                     fontSize: 14.5, fontWeight: 600, color: '#13233A', letterSpacing: '-0.01em',
                   }}>
-                    Dr. {providerName}
+                    {providerName}
                   </div>
                   <div style={{ fontSize: 12.5, color: '#8794A5', marginTop: 3 }}>
                     Treating clinician

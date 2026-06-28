@@ -429,7 +429,7 @@ function PatientPreview({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 2px 16px' }}>
           <div>
             <div style={{ fontSize: '23px', fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.1 }}>Hi {memberFirstName}</div>
-            <div style={{ fontSize: '12.5px', color: '#5A6B80', marginTop: '5px' }}>Your care plan from Dr. {providerName} · {consultDate}</div>
+            <div style={{ fontSize: '12.5px', color: '#5A6B80', marginTop: '5px' }}>Your care plan from {providerName} · {consultDate}</div>
           </div>
           <div style={{ width: '38px', height: '38px', borderRadius: '99px', background: '#13233A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>{memberInitials}</div>
         </div>
@@ -640,7 +640,7 @@ export function CarePlanBuilder() {
 
   const memberName = consultation?.member?.full_name ?? 'Ananya Sharma'
   const memberAge = age(consultation?.member?.dob ?? null) ?? 46
-  const providerName = consultation?.provider?.full_name ?? 'Priya Mehra'
+  const providerName = consultation?.provider?.full_name ?? 'Dr. Priya Mehra'
   const providerSpec = consultation?.provider?.specialty ?? 'Endocrinology'
   const consultDate = consultation?.consulted_at ? fmt(consultation.consulted_at) + ' 2026' : '27 Jun 2026'
   const consultDateShort = consultation?.consulted_at ? fmt(consultation.consulted_at) : '27 Jun'
@@ -722,7 +722,7 @@ export function CarePlanBuilder() {
               <Video size={16} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> Video consult · {consultDate}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px', fontSize: '13px', color: '#3A4A5E', marginTop: '11px' }}>
-              <Stethoscope size={16} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> Dr. {providerName} · {providerSpec}
+              <Stethoscope size={16} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> {providerName} · {providerSpec}
             </div>
           </div>
 

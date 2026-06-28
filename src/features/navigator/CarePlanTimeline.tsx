@@ -93,7 +93,7 @@ export function CarePlanTimeline({
         </span>
       </div>
       <div style={{ fontSize: '12.5px', color: '#8794A5', marginBottom: '22px' }}>
-        {providerName ? `Dr. ${providerName}` : 'Care team'} · {actions.length} action{actions.length !== 1 ? 's' : ''}
+        {providerName ?? 'Care team'} · {actions.length} action{actions.length !== 1 ? 's' : ''}
         {consultAt ? ` · from ${new Date(consultAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}
       </div>
 
