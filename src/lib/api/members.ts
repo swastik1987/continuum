@@ -32,14 +32,34 @@ export async function getMember(memberId: string): Promise<MemberRow | null> {
 }
 
 // Used by useMember hook to give admin a demo patient view when they have no member_id.
-// Uses a SECURITY DEFINER RPC to bypass profiles RLS (profiles RLS is scoped per-user).
+// Uses a SECURITY DEFINER RPC (bypasses profiles RLS) with a name-based fallback.
 export async function getMemberForDemoRole(role: string): Promise<MemberRow | null> {
-  if (role === 'patient') {
-    const { data: memberId } = await supabase.rpc('get_demo_patient_member_id')
-    if (!memberId) return null
-    return getMember(memberId as string)
+  if (role !== 'patient') return null
+
+  // Strategy 1: SECURITY DEFINER RPC looks up the patient profile's member_id.
+  // PostgREST may return a scalar string or a single-element array — handle both.
+  const { data: rpcResult } = await supabase.rpc('get_demo_patient_member_id')
+  if (rpcResult) {
+    const id =
+      typeof rpcResult === 'string'
+        ? rpcResult
+        : Array.isArray(rpcResult)
+          ? String((rpcResult as Array<{ member_id: string } | string>)[0]?.member_id ?? (rpcResult as string[])[0] ?? '')
+          : null
+    if (id) {
+      const m = await getMember(id)
+      if (m) return m
+    }
   }
-  return null
+
+  // Strategy 2: The setup script always links patient@demo to 'Priya Sharma'.
+  // Admin can read the members table (permissive authenticated policy).
+  const { data } = await supabase
+    .from('members')
+    .select('*')
+    .eq('full_name', 'Priya Sharma')
+    .maybeSingle()
+  return data ?? null
 }
 
 export async function listMembersForOrg(orgId: string): Promise<MemberRow[]> {

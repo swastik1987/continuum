@@ -395,7 +395,12 @@ export type Database = {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      get_demo_patient_member_id: {
+        Args: Record<never, never>
+        Returns: string | null
+      }
+    }
     Enums: {
       user_role: 'patient' | 'navigator' | 'clinician' | 'employer_admin' | 'admin'
       risk_tier: 'low' | 'medium' | 'high'
