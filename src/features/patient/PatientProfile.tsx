@@ -83,13 +83,15 @@ export function PatientProfile() {
 
   const { data: org } = useQuery({
     queryKey: ['org', member?.org_id],
-    queryFn: () =>
-      supabase
+    queryFn: async () => {
+      const r = await supabase
         .from('organizations')
         .select('name')
         .eq('id', member!.org_id!)
         .single()
-        .then((r) => r.data),
+      return r.data as { name: string } | null
+    },
+
     enabled: !!member?.org_id,
   })
 
