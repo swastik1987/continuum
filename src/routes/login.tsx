@@ -10,7 +10,7 @@ const DEMO_USERS = [
   {
     label: 'Patient',
     email: 'patient@demo.continuum.health',
-    hint: 'Ananya's care plan · tap actions, book or decline',
+    hint: "Ananya's care plan · tap actions, book or decline",
   },
   {
     label: 'Navigator',
