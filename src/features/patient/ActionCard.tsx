@@ -25,17 +25,17 @@ function StatusBadge({ action }: { action: ActionRow }) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 5,
-          padding: '3px 9px',
+          padding: '5px 11px',
           borderRadius: 99,
           background: '#FBEFDD',
           color: '#A6620F',
-          fontSize: 11.5,
+          fontSize: 12,
           fontWeight: 600,
           whiteSpace: 'nowrap',
           flexShrink: 0,
         }}
       >
-        <span style={{ width: 5, height: 5, borderRadius: 99, background: '#D9821B', display: 'inline-block' }} />
+        <span style={{ width: 6, height: 6, borderRadius: 99, background: '#D9821B', display: 'inline-block' }} />
         Overdue{daysOverdue > 0 ? ` · ${daysOverdue}d` : ''}
       </span>
     )
@@ -47,17 +47,17 @@ function StatusBadge({ action }: { action: ActionRow }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: 5,
-        padding: '3px 9px',
+        padding: '5px 11px',
         borderRadius: 99,
         background: '#EEF1F5',
         color: '#475569',
-        fontSize: 11.5,
+        fontSize: 12,
         fontWeight: 600,
         whiteSpace: 'nowrap',
         flexShrink: 0,
       }}
     >
-      <span style={{ width: 5, height: 5, borderRadius: 99, background: '#64748B', display: 'inline-block' }} />
+      <span style={{ width: 6, height: 6, borderRadius: 99, background: '#64748B', display: 'inline-block' }} />
       Due soon
     </span>
   )

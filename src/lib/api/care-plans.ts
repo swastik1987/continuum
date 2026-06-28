@@ -110,7 +110,72 @@ export async function listConsultationsForMember(memberId: string): Promise<Cons
   return (data ?? []) as ConsultationWithProvider[]
 }
 
-// Returns the single most urgent at-risk action for a member (overdue first, then declined).
+// ── Care Plan Builder API ──────────────────────────────────────────────────
+
+export type ConsultationWithMeta = ConsultationRow & {
+  member: { id: string; full_name: string; dob: string | null } | null
+  provider: { id: string; full_name: string; specialty: string | null } | null
+}
+
+export async function listConsultations(): Promise<ConsultationWithMeta[]> {
+  const { data } = await supabase
+    .from('consultations')
+    .select('*, member:members(id,full_name,dob), provider:providers(id,full_name,specialty)')
+    .order('consulted_at', { ascending: false })
+
+  return (data ?? []) as ConsultationWithMeta[]
+}
+
+type ActionPatch = {
+  action_type?: ActionRow['action_type']
+  title?: string
+  why_plain?: string | null
+  clinical_priority?: ActionRow['clinical_priority']
+  due_date?: string | null
+}
+
+export async function updateCarePlanAction(id: string, patch: ActionPatch): Promise<void> {
+  await supabase.from('care_plan_actions').update(patch).eq('id', id)
+}
+
+export async function addCarePlanAction(
+  planId: string,
+  memberId: string,
+  data: {
+    action_type: ActionRow['action_type']
+    title: string
+    why_plain?: string
+    clinical_priority: ActionRow['clinical_priority']
+    due_date?: string
+  },
+): Promise<ActionRow | null> {
+  const { data: row } = await supabase
+    .from('care_plan_actions')
+    .insert({
+      care_plan_id: planId,
+      member_id: memberId,
+      provenance: 'clinician_authored',
+      status: 'pending',
+      ...data,
+    })
+    .select()
+    .single()
+
+  return row ?? null
+}
+
+export async function deleteCarePlanAction(id: string): Promise<void> {
+  await supabase.from('care_plan_actions').delete().eq('id', id)
+}
+
+export async function confirmSuggestedAction(id: string): Promise<void> {
+  await supabase
+    .from('care_plan_actions')
+    .update({ provenance: 'clinician_confirmed' })
+    .eq('id', id)
+}
+
+// ── Returns the single most urgent at-risk action for a member (overdue first, then declined).
 // Used by the navigator worklist "Action at risk" column.
 export async function getAtRiskActionForMember(memberId: string): Promise<ActionRow | null> {
   const { data: overdue } = await supabase
