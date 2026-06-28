@@ -533,7 +533,14 @@ export function CarePlanBuilder() {
         setPlanResult(result)
         if (result) {
           const authored = result.actions.filter((a) => a.provenance !== 'system_suggested')
-          const suggested = result.actions.filter((a) => a.provenance === 'system_suggested')
+          const seenTypes = new Set<string>()
+          const suggested = result.actions
+            .filter((a) => a.provenance === 'system_suggested')
+            .filter((a) => {
+              if (seenTypes.has(a.action_type)) return false
+              seenTypes.add(a.action_type)
+              return true
+            })
           setActions(authored.map(toEditableAction))
           if (suggested.length > 0) {
             setSuggestions(suggested.map((a) => ({

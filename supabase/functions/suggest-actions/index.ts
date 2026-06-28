@@ -310,6 +310,14 @@ Max 3 items. Be practical, evidence-based, and conservative.`,
       rawSuggestions = keywordFallback(chief, summary)
     }
 
+    // Deduplicate by action_type — keeps first occurrence (Gemini can repeat types)
+    const seenTypes = new Set<string>()
+    rawSuggestions = rawSuggestions.filter((s) => {
+      if (seenTypes.has(s.action_type)) return false
+      seenTypes.add(s.action_type)
+      return true
+    })
+
     // Compute due dates from current_day + offset
     const baseDate = new Date(currentDay)
     const rows = rawSuggestions.map((s) => {
