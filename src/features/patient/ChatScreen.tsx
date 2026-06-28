@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { format, isToday, isYesterday } from 'date-fns'
 import {
-  ChevronLeft, Phone, MoreVertical, Info,
+  ChevronLeft, Phone, EllipsisVertical, Info,
   CalendarCheck, CircleHelp, CheckCheck, LoaderCircle, Plus, Smile, Send,
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
@@ -322,7 +322,7 @@ export function ChatScreen() {
           <Phone size={20} color="#0E8C7F" />
         </button>
         <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
-          <MoreVertical size={20} color="#8794A5" />
+          <EllipsisVertical size={20} color="#8794A5" />
         </button>
       </div>
 

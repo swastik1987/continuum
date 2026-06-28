@@ -1,4 +1,4 @@
-import { Calendar, ShieldCheck, CheckCircle2, Home, Video } from 'lucide-react'
+import { Calendar, ShieldCheck, CircleCheckBig, Home, Video } from 'lucide-react'
 import { format } from 'date-fns'
 import type { ActionRow } from '@/lib/api/care-plans'
 import { ACTION_ICON, ACTION_SUBTITLE, actionIconStyle } from './actionConfig'
@@ -109,7 +109,7 @@ function ActionCta({ action, onOpen }: { action: ActionRow; onOpen: () => void }
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, color: '#167A41' }}>
-          <CheckCircle2 size={17} strokeWidth={1.75} />
+          <CircleCheckBig size={17} strokeWidth={1.75} />
           {action.due_date ? `Completed on ${format(new Date(action.due_date), 'd MMM')}` : 'Completed'}
         </span>
         <button onClick={onOpen} style={{ background: 'transparent', color: '#167A41', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', padding: 0 }}>

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { CheckCircle2, Stethoscope, Droplet, Pill, Syringe, HeartPulse, Scan, FlaskConical } from 'lucide-react'
+import { CircleCheckBig, Stethoscope, Droplet, Pill, Syringe, HeartPulse, Scan, FlaskConical } from 'lucide-react'
 import { getActivePlanForMember, listConsultationsForMember } from '@/lib/api'
 import { useMember } from '@/lib/hooks/useMember'
 
@@ -130,7 +130,7 @@ function PatientRecords() {
                       marginTop: 4,
                     }}
                   >
-                    <CheckCircle2 size={14} strokeWidth={1.75} />
+                    <CircleCheckBig size={14} strokeWidth={1.75} />
                     Completed
                     {action.due_date
                       ? ` · ${format(new Date(action.due_date), 'd MMM yyyy')}`

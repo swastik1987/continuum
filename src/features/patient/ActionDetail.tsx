@@ -10,7 +10,7 @@ import {
   Building2,
   MapPin,
   Wallet,
-  CheckCircle2,
+  CircleCheckBig,
   Bell,
   CircleSlash,
   ChevronDown,
@@ -311,7 +311,7 @@ export function ActionDetail({ actionId }: Props) {
               marginBottom: 14,
             }}
           >
-            <CheckCircle2
+            <CircleCheckBig
               size={40}
               strokeWidth={1.5}
               color="#1F9D55"
