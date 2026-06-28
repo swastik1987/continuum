@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import {
-  Cloud, Eye, Send, ClipboardList, Video, Stethoscope,
+  Cloud, Send, ClipboardList, Video, Stethoscope,
   FlaskConical, Pill, Syringe, HeartPulse, Activity,
   ChevronsUpDown, Trash2, Plus, Calendar, ShieldCheck,
   Sparkles, Check, X, Smartphone, Lock, LogOut,
@@ -676,15 +676,6 @@ export function CarePlanBuilder() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', color: '#8794A5', fontWeight: 500 }}>
             <Cloud size={15} strokeWidth={1.75} /> Draft saved · just now
           </div>
-          <button style={{ fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#fff', color: '#13233A', border: '1px solid #E4E2DD', borderRadius: '10px', padding: '10px 15px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer' }}>
-            <Eye size={16} strokeWidth={1.75} style={{ color: '#5A6B80' }} /> Preview
-          </button>
-          <button
-            onClick={() => void handlePublish()}
-            style={{ fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0E8C7F', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 18px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 2px rgba(14,140,127,.3)' }}
-          >
-            <Send size={16} strokeWidth={1.75} /> Publish care plan
-          </button>
           <button
             onClick={() => void signOut()}
             title="Sign out"
@@ -701,7 +692,7 @@ export function CarePlanBuilder() {
         {/* ── Left aside: Consult summary ── */}
         <aside style={{ width: '316px', flexShrink: 0, background: '#fff', borderRight: '1px solid #ECEAE5', overflowY: 'auto', padding: '22px 22px 28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono, monospace)', fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8794A5', marginBottom: '16px' }}>
-            <ClipboardList size={14} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> Consult summary
+            <ClipboardList size={14} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> 1 · Consult summary
           </div>
 
           {/* Patient identity */}
@@ -777,6 +768,7 @@ export function CarePlanBuilder() {
           {/* Authored heading */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
             <div>
+              <div style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8794A5', marginBottom: '8px' }}>2 · Build plan</div>
               <h2 style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', margin: 0 }}>Next steps</h2>
               <p style={{ fontSize: '13.5px', color: '#5A6B80', margin: '5px 0 0' }}>The structured actions Continuum will track until they're done.</p>
             </div>
@@ -841,7 +833,7 @@ export function CarePlanBuilder() {
         <aside style={{ width: '404px', flexShrink: 0, background: '#EFEDE8', borderLeft: '1px solid #E4E2DD', overflowY: 'auto', padding: '22px 22px 34px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-mono, monospace)', fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8794A5' }}>
-              <Smartphone size={14} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> Patient preview
+              <Smartphone size={14} strokeWidth={1.75} style={{ color: '#0E8C7F' }} /> 3 · Preview &amp; publish
             </div>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: 600, color: '#0B6F64' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '99px', background: '#1F9D55' }} /> Live
@@ -856,8 +848,16 @@ export function CarePlanBuilder() {
             consultDate={consultDateShort}
           />
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '16px', fontSize: '11.5px', color: '#8794A5', textAlign: 'center' }}>
-            <Lock size={13} strokeWidth={1.75} /> Updates live as you build · published only when you hit Publish
+          <div style={{ marginTop: '20px', padding: '16px', borderRadius: '14px', background: 'rgba(255,255,255,0.5)', border: '1px solid #E4E2DD' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', fontSize: '11.5px', color: '#8794A5', marginBottom: '14px' }}>
+              <Lock size={13} strokeWidth={1.75} /> Updates live as you build · not sent until you publish
+            </div>
+            <button
+              onClick={() => void handlePublish()}
+              style={{ fontFamily: 'inherit', width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#0E8C7F', color: '#fff', border: 'none', borderRadius: '10px', padding: '12px 18px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 3px rgba(14,140,127,.35)' }}
+            >
+              <Send size={16} strokeWidth={1.75} /> Publish care plan to {memberName.split(' ')[0]}
+            </button>
           </div>
         </aside>
       </div>
