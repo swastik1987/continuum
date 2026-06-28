@@ -181,9 +181,21 @@ function AuthoredCard({
   onChange: (patch: Partial<EditableAction>) => void
   onRemove: () => void
 }) {
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const pickerRef = useRef<HTMLDivElement>(null)
   const p = PRIO[action.clinical_priority]
   const Icon = TYPE_ICON[action.action_type]
-  const typeIdx = TYPE_ORDER.indexOf(action.action_type)
+
+  useEffect(() => {
+    if (!pickerOpen) return
+    function handleOutside(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setPickerOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [pickerOpen])
 
   return (
     <div style={{
@@ -196,22 +208,65 @@ function AuthoredCard({
     }}>
       {/* Type selector + trash */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-        <button
-          onClick={() => onChange({ action_type: TYPE_ORDER[(typeIdx + 1) % TYPE_ORDER.length] })}
-          title="Click to change action type"
-          style={{
-            fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '9px',
-            background: '#fff', border: '1px solid #E4E2DD', borderRadius: '9px',
-            padding: '7px 11px 7px 9px', fontSize: '13px', fontWeight: 600,
-            color: '#13233A', cursor: 'pointer',
-          }}
-        >
-          <span style={{ width: '26px', height: '26px', borderRadius: '7px', background: '#EDF4F3', color: '#0B6F64', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon size={16} strokeWidth={1.75} />
-          </span>
-          {TYPE_LABEL[action.action_type]}
-          <ChevronsUpDown size={14} strokeWidth={1.75} style={{ color: '#A2AAB4' }} />
-        </button>
+        <div style={{ position: 'relative' }} ref={pickerRef}>
+          <button
+            onClick={() => setPickerOpen((prev) => !prev)}
+            title="Select action type"
+            style={{
+              fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '9px',
+              background: pickerOpen ? '#F7F6F3' : '#fff', border: '1px solid #E4E2DD', borderRadius: '9px',
+              padding: '7px 11px 7px 9px', fontSize: '13px', fontWeight: 600,
+              color: '#13233A', cursor: 'pointer',
+            }}
+          >
+            <span style={{ width: '26px', height: '26px', borderRadius: '7px', background: '#EDF4F3', color: '#0B6F64', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon size={16} strokeWidth={1.75} />
+            </span>
+            {TYPE_LABEL[action.action_type]}
+            <span style={{ color: '#A2AAB4', display: 'inline-flex' }}>
+              <ChevronsUpDown size={14} strokeWidth={1.75} />
+            </span>
+          </button>
+
+          {pickerOpen && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 50,
+              background: '#fff', border: '1px solid #E4E2DD', borderRadius: '12px',
+              boxShadow: '0 8px 24px -8px rgba(19,35,58,.18), 0 1px 3px rgba(19,35,58,.06)',
+              padding: '5px', minWidth: '210px',
+            }}>
+              {TYPE_ORDER.map((type) => {
+                const OptionIcon = TYPE_ICON[type]
+                const active = action.action_type === type
+                return (
+                  <button
+                    key={type}
+                    onClick={() => { onChange({ action_type: type }); setPickerOpen(false) }}
+                    style={{
+                      fontFamily: 'inherit', width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '8px 10px', borderRadius: '8px',
+                      background: active ? '#EDF4F3' : 'transparent',
+                      border: 'none', cursor: 'pointer',
+                      color: active ? '#0B6F64' : '#3A4A5E',
+                      fontSize: '13px', fontWeight: 600, textAlign: 'left',
+                    }}
+                  >
+                    <span style={{ width: '26px', height: '26px', borderRadius: '7px', background: active ? '#D7EDE9' : '#F4F2EE', color: active ? '#0B6F64' : '#6B6256', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <OptionIcon size={15} strokeWidth={1.75} />
+                    </span>
+                    {TYPE_LABEL[type]}
+                    {active && (
+                      <span style={{ marginLeft: 'auto', display: 'inline-flex', color: '#0E8C7F' }}>
+                        <Check size={14} strokeWidth={2} />
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         <button
           onClick={onRemove}
           title="Remove action"
@@ -345,7 +400,19 @@ function SuggestionCard({
   )
 }
 
-function PatientPreview({ actions }: { actions: EditableAction[] }) {
+function PatientPreview({
+  actions,
+  memberFirstName,
+  memberInitials,
+  providerName,
+  consultDate,
+}: {
+  actions: EditableAction[]
+  memberFirstName: string
+  memberInitials: string
+  providerName: string
+  consultDate: string
+}) {
   return (
     <div style={{ width: '360px', margin: '0 auto', background: '#F7F6F3', borderRadius: '38px', border: '1px solid #E4E2DD', boxShadow: '0 24px 60px -28px rgba(19,35,58,.4)', overflow: 'hidden' }}>
       {/* Status bar */}
@@ -361,10 +428,10 @@ function PatientPreview({ actions }: { actions: EditableAction[] }) {
         {/* Greeting */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 2px 16px' }}>
           <div>
-            <div style={{ fontSize: '23px', fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.1 }}>Hi Ananya</div>
-            <div style={{ fontSize: '12.5px', color: '#5A6B80', marginTop: '5px' }}>Your care plan from Dr. Mehra · 27 Jun</div>
+            <div style={{ fontSize: '23px', fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.1 }}>Hi {memberFirstName}</div>
+            <div style={{ fontSize: '12.5px', color: '#5A6B80', marginTop: '5px' }}>Your care plan from Dr. {providerName} · {consultDate}</div>
           </div>
-          <div style={{ width: '38px', height: '38px', borderRadius: '99px', background: '#13233A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>AN</div>
+          <div style={{ width: '38px', height: '38px', borderRadius: '99px', background: '#13233A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>{memberInitials}</div>
         </div>
 
         {/* Progress ring */}
@@ -576,6 +643,7 @@ export function CarePlanBuilder() {
   const providerName = consultation?.provider?.full_name ?? 'Priya Mehra'
   const providerSpec = consultation?.provider?.specialty ?? 'Endocrinology'
   const consultDate = consultation?.consulted_at ? fmt(consultation.consulted_at) + ' 2026' : '27 Jun 2026'
+  const consultDateShort = consultation?.consulted_at ? fmt(consultation.consulted_at) : '27 Jun'
   const chiefComplaint = consultation?.chief_complaint ?? 'Increased thirst and fatigue over the past 6 weeks.'
   const clinicalNotes = consultation?.summary ?? 'Presents with classic hyperglycaemia symptoms. Fasting glucose elevated. Likely new Type 2 diabetes — confirm with HbA1c. Start first-line metformin, lifestyle counselling, and structured follow-up to track response.'
 
@@ -771,7 +839,13 @@ export function CarePlanBuilder() {
             </span>
           </div>
 
-          <PatientPreview actions={actions} />
+          <PatientPreview
+            actions={actions}
+            memberFirstName={memberName.split(' ')[0]}
+            memberInitials={initials(memberName)}
+            providerName={providerName}
+            consultDate={consultDateShort}
+          />
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '16px', fontSize: '11.5px', color: '#8794A5', textAlign: 'center' }}>
             <Lock size={13} strokeWidth={1.75} /> Updates live as you build · published only when you hit Publish
