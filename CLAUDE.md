@@ -1,7 +1,7 @@
 # CLAUDE.md — Continuum
 
 ## What this is
-**Continuum** is a prototype of Connect & Heal's (CNH) **closed-loop care-continuity engine**. It exists to demonstrate to CNH's founders and CTO that follow-up drop-off can be reduced by (a) productizing the care plan into a structured, trackable object, (b) removing friction so the next step is the default, (c) putting human navigators only on the risk-stratified tail, and (d) proving to employers we improve engagement and avoid future claims cost **without spamming patients to bill tests**.
+**Continuum** is a prototype of Connect & Heal's (CNH) **closed-loop care-continuity engine**. It exists to demonstrate that follow-up drop-off can be reduced by (a) productizing the care plan into a structured, trackable object, (b) removing friction so the next step is the default, (c) putting human navigators only on the risk-stratified tail, and (d) proving to employers we improve engagement and avoid future claims cost **without spamming patients to bill tests**.
 
 This is a **demo prototype for evaluation**, not production. Optimize for a crisp, believable end-to-end walkthrough over completeness. When in doubt, build the thing that makes the *closed loop* and the *trust story* legible.
 
@@ -72,7 +72,7 @@ UI was designed in Claude Design (see `01-claude-design-prompts.md`). Match its 
 - Real payments / wallet ledger — simulated balance only.
 - DPDP-compliant consent capture, audit logging, data residency — note as required for production.
 
-## The cost-avoidance model (keep it transparent — the CTO will probe it)
+## The cost-avoidance model (keep it transparent — expect scrutiny)
 Full spec in `05-cost-avoidance-model.md`. Do NOT hardcode a magic number. Implement `estimateClaimsAvoided()` as a transparent, tunable pure function in `src/lib/costModel.ts`:
 `avoided = Σ over completed mandatory/recommended actions of (eventCost × baselineEventRate[tier] × riskReduction × attribution × priorityWeight)`
 with named, editable constants, optional actions excluded, and a clear "illustrative — not actuarial" label plus an assumptions tooltip surfaced in the UI.

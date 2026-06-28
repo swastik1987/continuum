@@ -222,7 +222,7 @@ Feel: fast, structured, clinical-grade but clean. Make the suggested-vs-authored
 ```
 Design a small DESKTOP web panel for the Continuum prototype, using the Continuum design system.
 
-SCREEN: Demo Control ("Simulation") panel — used live in the founder demo to make the closed loop visible in seconds.
+SCREEN: Demo Control ("Simulation") panel — used live in the demo to make the closed loop visible in seconds.
 LAYOUT:
 - A compact card titled "Demo Simulation".
 - "Current day: 14 Jun" with a large primary button "Advance 1 day ▶" and "Advance 7 days ⏭".

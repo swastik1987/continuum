@@ -91,7 +91,7 @@ Build the prototype in the milestone order below. Read `CLAUDE.md` first — its
 - `npm run seed`: ~30–40 fictional members across all risk tiers and segments under Acme Corp; providers; consults; published care plans with mixed action states; some prior clinical events; a few seeded navigator tasks; baseline metrics so the dashboard shows improvement from ~54% → ~71%.
 - Hand-craft **4 hero members** that carry the narrative below.
 
-**Demo narrative (script for the founder walkthrough):**
+**Demo narrative (script for the walkthrough):**
 1. **Clinician** finishes Ananya's consult → builds a plan: 1 mandatory lab + 1 recommended follow-up; dismisses a system-suggested optional test (shows the provenance guardrail).
 2. **Patient (Ananya)** gets a WhatsApp reminder → books **home collection**, **₹0 via wallet**. Advance a day → diagnostics event lands → **action auto-completes** (the signature moment).
 3. **Patient (Rohan, `feels_better`/declines mandatory)** → "I feel fine." System does **not** spam → routes to navigator.
@@ -113,4 +113,4 @@ Build the prototype in the milestone order below. Read `CLAUDE.md` first — its
 ---
 
 ### Build order priority if time-boxed
-Moat + loop + trust first: **M0 → M1 → M2 → M3 → M5 → M8 → M9 → M7**, then M4, M6, M10. Reason: the founder/CTO verdict hinges on (a) structured care plan, (b) auto-closing loop, (c) suppression/trust story, (d) a live simulation that proves it — not on chat polish or navigator depth.
+Moat + loop + trust first: **M0 → M1 → M2 → M3 → M5 → M8 → M9 → M7**, then M4, M6, M10. Reason: the demo evaluation hinges on (a) structured care plan, (b) auto-closing loop, (c) suppression/trust story, (d) a live simulation that proves it — not on chat polish or navigator depth.

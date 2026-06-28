@@ -99,7 +99,7 @@ Write `members.risk_score`, `risk_tier`, `risk_drivers` (jsonb array of the driv
 9. **Activity feed:** accumulate human-readable lines, e.g. "Day 15 · 18 reminders sent, 3 suppressed (structural) · 7 tests auto-completed · 2 members → High risk · 1 ER follow-up created".
 
 **Output:** `{ ok, current_day, counts, activity: string[] }`.
-**Determinism:** default to live randomness for a lively demo; expose a `seed?` input that, when set, makes the run repeatable (use a seeded PRNG) so you can rehearse the founder demo identically.
+**Determinism:** default to live randomness for a lively demo; expose a `seed?` input that, when set, makes the run repeatable (use a seeded PRNG) so you can rehearse the demo identically.
 **Acceptance:** "Advance 1 day" returns a believable activity feed and visibly changes the patient, navigator, and employer views (Realtime-subscribed).
 
 ---
