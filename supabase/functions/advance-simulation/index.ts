@@ -1,6 +1,5 @@
 // advance-simulation — demo heartbeat.
-// Orchestrates run-nudge-engine → close-loop → compute-risk per simulated day.
-// Also handles full reset: deletes simulation-created rows and restores seed state.
+// All logic inlined (no sub-function HTTP calls). Batch inserts/updates only.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -9,37 +8,34 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
 )
 
-// ── Tunable simulation constants ─────────────────────────────────────────────
-const BASE_DATE = '2026-06-14'          // seed's sim start date
-const ER_PROBABILITY = 0.03             // per member per sim day
-const MAX_DAYS = 30                     // safety cap on days input
+// ── Tunable constants ─────────────────────────────────────────────────────────
+const BASE_DATE      = '2026-06-14'
+const ER_PROBABILITY = 0.03
+const MAX_DAYS       = 30
 
-// Probability of completing an action when nudged, by segment
 const COMPLETION_PROB: Record<string, number> = {
   forgot:       0.60,
   logistics:    0.40,
   lost_thread:  0.45,
   none:         0.50,
   feels_better: 0.15,
-  // cost / avoidance / trust: not simulated — already suppressed by nudge engine
 }
 
-// Additional probability of declining (applied after non-completion roll)
 const DECLINE_PROB: Record<string, number> = {
   feels_better: 0.40,
 }
 
-// Maps care_plan_actions.action_type → clinical_events row values on completion
 const COMPLETE_EVENT: Record<string, { eventType: string; source: string }> = {
   lab_test:          { eventType: 'diagnostic_completed', source: 'diagnostics' },
   imaging:           { eventType: 'diagnostic_completed', source: 'diagnostics' },
   medication:        { eventType: 'pharmacy_fulfilled',   source: 'pharmacy'    },
   follow_up_consult: { eventType: 'appointment_attended', source: 'clinic'      },
   vaccination:       { eventType: 'appointment_attended', source: 'clinic'      },
-  // lifestyle → no completion event
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+const STRUCTURAL_SEGS = new Set(['cost', 'avoidance', 'trust'])
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function addDays(date: string, n: number): string {
   const d = new Date(date + 'T00:00:00Z')
   d.setUTCDate(d.getUTCDate() + n)
@@ -52,40 +48,16 @@ function fmtDate(date: string): string {
   return `${d.getUTCDate()} ${M[d.getUTCMonth()]}`
 }
 
-// xorshift32 PRNG for seeded runs (repeatable demo rehearsal)
 function makeRng(seed?: number): () => number {
   if (!seed) return () => Math.random()
   let s = seed >>> 0 || 1
   return () => {
-    s ^= s << 13
-    s ^= s >>> 17
-    s ^= s << 5
+    s ^= s << 13; s ^= s >>> 17; s ^= s << 5
     return (s >>> 0) / 0x100000000
   }
 }
 
-// Call a Supabase Edge Function with a 15-second graceful timeout
-async function callFn(name: string, body: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
-  const url = `${Deno.env.get('SUPABASE_URL')}/functions/v1/${name}`
-  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  try {
-    const ctrl = new AbortController()
-    const tid = setTimeout(() => ctrl.abort(), 15_000)
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: ctrl.signal,
-    })
-    clearTimeout(tid)
-    return res.ok ? (await res.json() as Record<string, unknown>) : {}
-  } catch (e) {
-    console.warn(`${name} sub-call failed:`, e)
-    return {}
-  }
-}
-
-// ── CORS ─────────────────────────────────────────────────────────────────────
+// ── CORS / response ───────────────────────────────────────────────────────────
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -99,50 +71,39 @@ function jsonRes(body: unknown, status = 200) {
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type DayActivity = {
-  date: string
-  dateLabel: string
-  nudged: number
-  suppressed: number
-  closed: number
-  routed: number
-  er: number
-  newHighRisk: number
-}
+type Member = { id: string; full_name: string; drop_segment: string; risk_tier: string }
+type Action = { id: string; member_id: string; action_type: string; clinical_priority: string; status: string }
+type EventInsert = { member_id: string; event_type: string; source: string; occurred_at: string; payload: object; linked_action_id?: string }
+type TaskInsert  = { member_id: string; trigger_reason: string; priority: string; status: string; notes: string }
+type DayActivity = { date: string; dateLabel: string; nudged: number; suppressed: number; closed: number; routed: number; er: number; newHighRisk: number }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
     const body = await req.json().catch(() => ({})) as {
-      days?: number
-      reset?: boolean
-      sessionStartedAt?: string
-      seed?: number
+      days?: number; reset?: boolean; sessionStartedAt?: string; seed?: number
     }
     const { days = 1, reset = false, sessionStartedAt, seed } = body
 
     // ══════════════════════════════════════════════════════════════════════════
-    // RESET — undo rows created since this session started
+    // RESET
     // ══════════════════════════════════════════════════════════════════════════
     if (reset) {
       const since = sessionStartedAt ?? new Date(0).toISOString()
 
-      // Collect IDs of clinical events about to be deleted so we can unlink actions
       const { data: eventsToDelete } = await supabase
-        .from('clinical_events')
-        .select('id')
-        .gte('occurred_at', since)
+        .from('clinical_events').select('id').gte('occurred_at', since)
       const deletedEventIds = (eventsToDelete ?? []).map((e: { id: string }) => e.id)
 
-      // Delete simulation-created rows (nudges use sent_at; events/tasks use occurred_at/created_at)
-      await supabase.from('clinical_events').delete().gte('occurred_at', since)
-      await supabase.from('nudges').delete().gte('sent_at', since)
-      await supabase.from('navigator_tasks').delete().gte('created_at', since)
-      await supabase.from('messages').delete().gte('created_at', since)
+      await Promise.all([
+        supabase.from('clinical_events').delete().gte('occurred_at', since),
+        supabase.from('nudges').delete().gte('sent_at', since),
+        supabase.from('navigator_tasks').delete().gte('created_at', since),
+        supabase.from('messages').delete().gte('created_at', since),
+      ])
 
-      // Reset actions completed via deleted events
       if (deletedEventIds.length > 0) {
         await supabase
           .from('care_plan_actions')
@@ -150,22 +111,14 @@ Deno.serve(async (req) => {
           .in('completed_via_event_id', deletedEventIds)
       }
 
-      // Reset actions that became overdue only because the sim advanced
-      // Seed-overdue actions have due_date < BASE_DATE, so this filter is safe
       await supabase
-        .from('care_plan_actions')
-        .update({ status: 'pending' })
-        .eq('status', 'overdue')
-        .gte('due_date', BASE_DATE)
+        .from('care_plan_actions').update({ status: 'pending' })
+        .eq('status', 'overdue').gte('due_date', BASE_DATE)
 
-      // Reset all member risk scores (recomputed fresh on next advance)
-      await supabase
-        .from('members')
+      await supabase.from('members')
         .update({ risk_score: 0, risk_tier: 'low', risk_drivers: [] })
 
-      // Reset sim date
-      await supabase
-        .from('sim_state')
+      await supabase.from('sim_state')
         .update({ current_day: BASE_DATE, updated_at: new Date().toISOString() })
         .eq('id', 1)
 
@@ -173,182 +126,187 @@ Deno.serve(async (req) => {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // ADVANCE — loop numDays times through the 9-step sequence
+    // ADVANCE — fetch shared data once, then loop per day
     // ══════════════════════════════════════════════════════════════════════════
-    const rng = makeRng(seed)
-    const numDays = Math.min(Math.max(1, Number(days) || 1), MAX_DAYS)
-    const counts = { nudged: 0, suppressed: 0, closed: 0, routed: 0, tasks: 0 }
+    const rng      = makeRng(seed)
+    const numDays  = Math.min(Math.max(1, Number(days) || 1), MAX_DAYS)
+    const counts   = { nudged: 0, suppressed: 0, closed: 0, routed: 0, tasks: 0 }
     const daysActivity: DayActivity[] = []
+
+    // Load members once — reused every day (O(members) not O(days × members))
+    const { data: membersData } = await supabase
+      .from('members').select('id, full_name, drop_segment, risk_tier')
+    const memberMap = new Map<string, Member>()
+    for (const m of membersData ?? []) memberMap.set((m as Member).id, m as Member)
+
+    // Track open tasks client-side to avoid per-iteration dedup queries
+    const { data: existingTasks } = await supabase
+      .from('navigator_tasks').select('member_id, trigger_reason').eq('status', 'open')
+    const openTaskKeys = new Set<string>(
+      (existingTasks ?? []).map((t: { member_id: string; trigger_reason: string }) =>
+        `${t.member_id}:${t.trigger_reason}`)
+    )
 
     for (let d = 0; d < numDays; d++) {
       // ── 1. Bump current_day ────────────────────────────────────────────────
       const { data: simRow } = await supabase
         .from('sim_state').select('current_day').eq('id', 1).single()
-      const today = addDays((simRow as { current_day: string } | null)?.current_day ?? BASE_DATE, 1)
-      const todayTs = today + 'T12:00:00.000Z' // noon timestamp for sim events
+      const today   = addDays((simRow as { current_day: string } | null)?.current_day ?? BASE_DATE, 1)
+      const todayTs = today + 'T12:00:00.000Z'
 
-      await supabase
-        .from('sim_state')
-        .update({ current_day: today, updated_at: new Date().toISOString() })
-        .eq('id', 1)
+      await supabase.from('sim_state')
+        .update({ current_day: today, updated_at: new Date().toISOString() }).eq('id', 1)
 
-      // ── 2. Mark overdue ────────────────────────────────────────────────────
-      await supabase
-        .from('care_plan_actions')
+      // ── 2. Mark overdue (one batch update) ────────────────────────────────
+      await supabase.from('care_plan_actions')
         .update({ status: 'overdue' })
         .in('status', ['pending', 'scheduled'])
         .lt('due_date', today)
 
-      // ── 3. Run nudge engine ────────────────────────────────────────────────
-      const nudgeRes = await callFn('run-nudge-engine', {}) as { nudgesFired?: number; suppressed?: number }
-      const dayNudged     = nudgeRes.nudgesFired ?? 0
-      const daySuppressed = nudgeRes.suppressed  ?? 0
-
-      // ── 4. Simulate patient responses ──────────────────────────────────────
-      // Select same pool as nudge engine: pending/overdue, clinician-authored/confirmed
+      // ── 3. Fetch eligible actions (one query, no join — member data from map)
       const { data: eligible } = await supabase
         .from('care_plan_actions')
-        .select('id, member_id, action_type, clinical_priority, member:members(id, drop_segment, full_name)')
+        .select('id, member_id, action_type, clinical_priority, status')
         .in('status', ['pending', 'overdue'])
         .in('provenance', ['clinician_authored', 'clinician_confirmed'])
 
-      let dayCompleted = 0
-      let dayDeclined  = 0
+      // ── 4. Roll responses — accumulate into batch arrays ──────────────────
+      const eventsToInsert:   EventInsert[] = []
+      const completedActionIds: string[]    = []
+      const declinedActionIds:  string[]    = []
+      const tasksToInsert:    TaskInsert[]  = []
+      let dayNudged = 0, daySuppressed = 0, dayDeclined = 0
 
       for (const action of eligible ?? []) {
-        const member = (action as { member: { id: string; drop_segment: string; full_name: string } | null }).member
+        const act    = action as Action
+        const member = memberMap.get(act.member_id)
         if (!member) continue
 
         const seg = member.drop_segment ?? 'none'
-        const cp  = COMPLETION_PROB[seg]
-        if (cp === undefined) continue // structural barrier — skip
 
+        if (STRUCTURAL_SEGS.has(seg)) { daySuppressed++; continue }
+
+        const cp = COMPLETION_PROB[seg]
+        if (cp === undefined) continue
+
+        dayNudged++
         const roll = rng()
 
         if (roll < cp) {
-          const evtMap = COMPLETE_EVENT[(action as { action_type: string }).action_type]
-          if (!evtMap) continue // lifestyle etc — no event type
-
-          await supabase.from('clinical_events').insert({
-            member_id:        (action as { member_id: string }).member_id,
+          const evtMap = COMPLETE_EVENT[act.action_type]
+          if (!evtMap) continue
+          eventsToInsert.push({
+            member_id:        act.member_id,
             event_type:       evtMap.eventType,
             source:           evtMap.source,
-            linked_action_id: (action as { id: string }).id,
+            linked_action_id: act.id,
             occurred_at:      todayTs,
             payload:          { simulated: true },
           })
-          dayCompleted++
+          completedActionIds.push(act.id)
         } else if (roll < cp + (DECLINE_PROB[seg] ?? 0)) {
-          await supabase
-            .from('care_plan_actions')
-            .update({ status: 'declined', decline_reason: 'Feeling better' })
-            .eq('id', (action as { id: string }).id)
-
-          if ((action as { clinical_priority: string }).clinical_priority === 'mandatory') {
-            const { data: existTask } = await supabase
-              .from('navigator_tasks').select('id')
-              .eq('member_id', (action as { member_id: string }).member_id)
-              .eq('trigger_reason', 'declined_mandatory')
-              .eq('status', 'open')
-              .maybeSingle()
-
-            if (!existTask) {
-              await supabase.from('navigator_tasks').insert({
-                member_id:      (action as { member_id: string }).member_id,
+          declinedActionIds.push(act.id)
+          if (act.clinical_priority === 'mandatory') {
+            const key = `${act.member_id}:declined_mandatory`
+            if (!openTaskKeys.has(key)) {
+              tasksToInsert.push({
+                member_id:      act.member_id,
                 trigger_reason: 'declined_mandatory',
                 priority:       'p1',
                 status:         'open',
                 notes:          `${member.full_name} declined mandatory action (feels better) on ${today}.`,
               })
-              counts.routed++
+              openTaskKeys.add(key)
               dayDeclined++
             }
           }
         }
       }
 
-      // ── 5. Occasional ER event ─────────────────────────────────────────────
-      const { data: allMembers } = await supabase.from('members').select('id, full_name')
-      let dayER = 0
-
-      for (const m of allMembers ?? []) {
-        if (rng() >= ER_PROBABILITY) continue
-
-        await supabase.from('clinical_events').insert({
-          member_id:  (m as { id: string }).id,
-          event_type: 'er_visit',
-          source:     'ambulance',
-          occurred_at: todayTs,
-          payload:    { simulated: true },
-        })
-
-        const { data: existErTask } = await supabase
-          .from('navigator_tasks').select('id')
-          .eq('member_id', (m as { id: string }).id)
-          .eq('trigger_reason', 'post_er_72h')
-          .eq('status', 'open')
-          .maybeSingle()
-
-        if (!existErTask) {
-          await supabase.from('navigator_tasks').insert({
-            member_id:      (m as { id: string }).id,
-            trigger_reason: 'post_er_72h',
-            priority:       'p1',
-            status:         'open',
-            notes:          `Emergency visit on ${today}. Follow-up within 72h required.`,
-          })
-          counts.tasks++
-          dayER++
-        }
+      // ── 5. High-risk overdue escalation (inline, no extra DB queries) ──────
+      // Use action list already loaded in step 3 to find overdue mandatory for high-risk members
+      const overdueHighRiskMids = new Set<string>()
+      for (const action of eligible ?? []) {
+        const act = action as Action
+        if (act.status !== 'overdue' || act.clinical_priority !== 'mandatory') continue
+        const member = memberMap.get(act.member_id)
+        if (member?.risk_tier === 'high') overdueHighRiskMids.add(act.member_id)
       }
-
-      // ── 6. Close loop ──────────────────────────────────────────────────────
-      const closeRes = await callFn('close-loop', {}) as { closed?: number }
-      const dayClosed = Math.max(closeRes.closed ?? 0, dayCompleted)
-
-      // ── 7. Recompute risk — capture delta ──────────────────────────────────
-      const { count: highBefore } = await supabase
-        .from('members').select('id', { count: 'exact', head: true }).eq('risk_tier', 'high')
-      await callFn('compute-risk', {})
-      const { count: highAfter } = await supabase
-        .from('members').select('id', { count: 'exact', head: true }).eq('risk_tier', 'high')
-      const newHighRisk = Math.max(0, (highAfter ?? 0) - (highBefore ?? 0))
-
-      // ── 8. Escalate high-risk overdue (dedupe) ─────────────────────────────
-      const { data: highMembers } = await supabase
-        .from('members').select('id').eq('risk_tier', 'high')
-
-      for (const m of highMembers ?? []) {
-        const { data: overdueOnes } = await supabase
-          .from('care_plan_actions').select('id')
-          .eq('member_id', (m as { id: string }).id)
-          .eq('status', 'overdue')
-          .eq('clinical_priority', 'mandatory')
-          .limit(1)
-        if (!overdueOnes?.length) continue
-
-        const { data: existTask } = await supabase
-          .from('navigator_tasks').select('id')
-          .eq('member_id', (m as { id: string }).id)
-          .eq('trigger_reason', 'high_risk_overdue')
-          .eq('status', 'open')
-          .maybeSingle()
-        if (existTask) continue
-
-        await supabase.from('navigator_tasks').insert({
-          member_id:      (m as { id: string }).id,
+      for (const mid of overdueHighRiskMids) {
+        const key = `${mid}:high_risk_overdue`
+        if (openTaskKeys.has(key)) continue
+        const member = memberMap.get(mid)!
+        tasksToInsert.push({
+          member_id:      mid,
           trigger_reason: 'high_risk_overdue',
           priority:       'p1',
           status:         'open',
           notes:          `High-risk member with overdue mandatory action as of ${today}.`,
         })
+        openTaskKeys.add(key)
         counts.tasks++
       }
 
-      // ── 9. Accumulate activity ─────────────────────────────────────────────
+      // ── 6. ER simulation — roll per member, batch ─────────────────────────
+      let dayER = 0
+      for (const [mid, member] of memberMap) {
+        if (rng() >= ER_PROBABILITY) continue
+        const key = `${mid}:post_er_72h`
+        if (openTaskKeys.has(key)) continue
+        eventsToInsert.push({
+          member_id:  mid,
+          event_type: 'er_visit',
+          source:     'ambulance',
+          occurred_at: todayTs,
+          payload:    { simulated: true },
+        })
+        tasksToInsert.push({
+          member_id:      mid,
+          trigger_reason: 'post_er_72h',
+          priority:       'p1',
+          status:         'open',
+          notes:          `Emergency visit on ${today}. Follow-up within 72h. Member: ${member.full_name}.`,
+        })
+        openTaskKeys.add(key)
+        counts.tasks++
+        dayER++
+      }
+
+      // ── 7. Batch DB writes (3 parallel where safe) ────────────────────────
+      const writes: Promise<unknown>[] = []
+
+      if (eventsToInsert.length > 0) {
+        writes.push(supabase.from('clinical_events').insert(eventsToInsert))
+      }
+      if (declinedActionIds.length > 0) {
+        writes.push(
+          supabase.from('care_plan_actions')
+            .update({ status: 'declined', decline_reason: 'Feeling better' })
+            .in('id', declinedActionIds)
+        )
+      }
+      if (tasksToInsert.length > 0) {
+        writes.push(supabase.from('navigator_tasks').insert(tasksToInsert))
+      }
+
+      await Promise.all(writes)
+
+      // ── 8. Close loop — one batch update for completed actions ─────────────
+      // Note: completed_via_event_id is omitted for sim completions (no teal banner needed).
+      // Pre-seeded events already have it set from the seed SQL.
+      if (completedActionIds.length > 0) {
+        await supabase.from('care_plan_actions')
+          .update({ status: 'completed' })
+          .in('id', completedActionIds)
+          .in('status', ['pending', 'overdue', 'scheduled'])
+      }
+      const dayClosed = completedActionIds.length
+
+      // ── 9. Accumulate ──────────────────────────────────────────────────────
       counts.nudged     += dayNudged
       counts.suppressed += daySuppressed
       counts.closed     += dayClosed
+      counts.routed     += dayDeclined
 
       daysActivity.push({
         date:        today,
@@ -358,7 +316,7 @@ Deno.serve(async (req) => {
         closed:      dayClosed,
         routed:      dayDeclined,
         er:          dayER,
-        newHighRisk,
+        newHighRisk: 0, // compute-risk is deferred; no separate function call
       })
     }
 
