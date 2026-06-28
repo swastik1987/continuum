@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
-  GitMerge, Play, ChevronsRight, PlayCircle, Pause, RotateCcw,
+  GitMerge, Play, ChevronsRight, PlayCircle, Pause, RotateCcw, Database,
   BellRing, CircleCheckBig, Route, TrendingUp, GitCommitHorizontal,
   CheckCheck, User, Compass, Stethoscope, Building2, Activity, LogOut,
 } from 'lucide-react'
@@ -177,8 +177,10 @@ export function DemoSimulation() {
   const [nudged,      setNudged]      = useState(feedInit.nudged)
   const [closed,      setClosed]      = useState(feedInit.closed)
   const [routed,      setRouted]      = useState(feedInit.routed)
-  const [loading,     setLoading]     = useState(false)
-  const [playing,     setPlaying]     = useState(false)
+  const [loading,       setLoading]       = useState(false)
+  const [playing,       setPlaying]       = useState(false)
+  const [confirmReseed, setConfirmReseed] = useState(false)
+  const [reseeding,     setReseeding]     = useState(false)
 
   const sessionStartedAt = useRef<string | null>(null)
   const pendingAdvance   = useRef(false)
@@ -310,6 +312,34 @@ export function DemoSimulation() {
     }
   }, [queryClient])
 
+  const fullReseed = useCallback(async () => {
+    if (playInterval.current) { clearInterval(playInterval.current); playInterval.current = null }
+    setPlaying(false)
+    setReseeding(true)
+    setConfirmReseed(false)
+
+    try {
+      const { data, error } = await supabase.functions.invoke<{ ok: boolean }>('reseed-demo', { body: {} })
+      if (error || !data?.ok) console.error('reseed-demo failed:', error ?? data)
+    } finally {
+      sessionStartedAt.current = null
+      nextEventId.current = 1
+      localStorage.removeItem(FEED_KEY)
+      setCurrentDay('2026-06-14')
+      setEvents([])
+      setNudged(0)
+      setClosed(0)
+      setRouted(0)
+      setTimestamp(fmtTimestamp())
+      setReseeding(false)
+      queryClient.invalidateQueries({ queryKey: ['sim-state'] })
+      queryClient.invalidateQueries({ queryKey: ['members'] })
+      queryClient.invalidateQueries({ queryKey: ['navigator-tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['care-plan-actions'] })
+      queryClient.invalidateQueries({ queryKey: ['employer:stats'] })
+    }
+  }, [queryClient])
+
   const switchRole = useCallback((role: Enums<'user_role'>, home: string) => {
     setViewAs(role)
     navigate({ to: home })
@@ -354,7 +384,76 @@ export function DemoSimulation() {
         .sim-adv7:hover:not(:disabled) { background: #F2F8F7 !important; }
         .sim-adv7:active:not(:disabled) { transform: scale(.97) !important; }
         .sim-reset:hover:not(:disabled) { background: #F4F2EE !important; color: #13233A !important; }
+        .sim-reseed:hover:not(:disabled) { border-color: #F1CFCD !important; color: #A8332F !important; background: #FEF2F2 !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
+
+      {/* ── CONFIRM RESEED MODAL ──────────────────────────────────────────── */}
+      {confirmReseed && (
+        <div
+          onClick={() => setConfirmReseed(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(19,35,58,.55)', backdropFilter: 'blur(3px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '340px', background: '#fff', borderRadius: '16px',
+              border: '1px solid #EDEBE6',
+              boxShadow: '0 8px 40px rgba(19,35,58,.22)',
+              padding: '24px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
+                background: '#FAE8E7', border: '1px solid #F1CFCD',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Database size={18} strokeWidth={1.75} color="#A8332F" />
+              </div>
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: '#13233A' }}>Full reset & reseed</div>
+                <div style={{ fontSize: '12px', color: '#8794A5', marginTop: '2px' }}>This cannot be undone</div>
+              </div>
+            </div>
+            <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.6, margin: '0 0 20px' }}>
+              All simulation data (members, care plans, events, messages) will be <strong>wiped</strong> and rebuilt from scratch with the full M9 demo dataset.
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => setConfirmReseed(false)}
+                style={{
+                  flex: 1, fontFamily: 'inherit',
+                  background: '#fff', color: '#5A6B80',
+                  border: '1px solid #E7E5E0', borderRadius: '10px',
+                  padding: '10px', fontSize: '13.5px', fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void fullReseed()}
+                style={{
+                  flex: 1, fontFamily: 'inherit',
+                  background: '#A8332F', color: '#fff',
+                  border: 'none', borderRadius: '10px',
+                  padding: '10px', fontSize: '13.5px', fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 1px 3px rgba(168,51,47,.35)',
+                }}
+              >
+                Wipe & reseed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{
         width: '460px',
@@ -630,6 +729,32 @@ export function DemoSimulation() {
           >
             <RotateCcw size={15} strokeWidth={1.75} />
             Reset demo
+          </button>
+        </div>
+
+        {/* ── FULL RESEED ───────────────────────────────────────────────────── */}
+        <div style={{ padding: '10px 24px 12px', borderTop: '1px solid #F0EEEA' }}>
+          <button
+            className="sim-reseed"
+            onClick={() => setConfirmReseed(true)}
+            disabled={loading || reseeding}
+            style={{
+              fontFamily: 'inherit', width: '100%',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
+              background: reseeding ? '#FEF2F2' : '#fff',
+              color: reseeding ? '#A8332F' : '#8794A5',
+              border: `1px solid ${reseeding ? '#F1CFCD' : '#E7E5E0'}`,
+              borderRadius: '10px', padding: '9px 14px',
+              fontSize: '13px', fontWeight: 600,
+              cursor: (loading || reseeding) ? 'not-allowed' : 'pointer',
+              transition: 'all .15s',
+            }}
+          >
+            {reseeding
+              ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'spin .8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg>
+              : <Database size={13} strokeWidth={1.75} />
+            }
+            {reseeding ? 'Reseeding demo data…' : 'Full reset & reseed'}
           </button>
         </div>
 
