@@ -25,6 +25,7 @@ import { Route as AppPatientRecordsRouteImport } from './routes/_app/patient/rec
 import { Route as AppPatientProfileRouteImport } from './routes/_app/patient/profile'
 import { Route as AppPatientChatRouteImport } from './routes/_app/patient/chat'
 import { Route as AppPatientActionActionIdRouteImport } from './routes/_app/patient/action.$actionId'
+import { Route as AppNavigatorMemberMemberIdRouteImport } from './routes/_app/navigator/member.$memberId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -106,6 +107,12 @@ const AppPatientActionActionIdRoute =
     path: '/action/$actionId',
     getParentRoute: () => AppPatientRoute,
   } as any)
+const AppNavigatorMemberMemberIdRoute =
+  AppNavigatorMemberMemberIdRouteImport.update({
+    id: '/member/$memberId',
+    path: '/member/$memberId',
+    getParentRoute: () => AppNavigatorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/employer/': typeof AppEmployerIndexRoute
   '/navigator/': typeof AppNavigatorIndexRoute
   '/patient/': typeof AppPatientIndexRoute
+  '/navigator/member/$memberId': typeof AppNavigatorMemberMemberIdRoute
   '/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRoutesByTo {
@@ -135,6 +143,7 @@ export interface FileRoutesByTo {
   '/employer': typeof AppEmployerIndexRoute
   '/navigator': typeof AppNavigatorIndexRoute
   '/patient': typeof AppPatientIndexRoute
+  '/navigator/member/$memberId': typeof AppNavigatorMemberMemberIdRoute
   '/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRoutesById {
@@ -154,6 +163,7 @@ export interface FileRoutesById {
   '/_app/employer/': typeof AppEmployerIndexRoute
   '/_app/navigator/': typeof AppNavigatorIndexRoute
   '/_app/patient/': typeof AppPatientIndexRoute
+  '/_app/navigator/member/$memberId': typeof AppNavigatorMemberMemberIdRoute
   '/_app/patient/action/$actionId': typeof AppPatientActionActionIdRoute
 }
 export interface FileRouteTypes {
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/employer/'
     | '/navigator/'
     | '/patient/'
+    | '/navigator/member/$memberId'
     | '/patient/action/$actionId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/employer'
     | '/navigator'
     | '/patient'
+    | '/navigator/member/$memberId'
     | '/patient/action/$actionId'
   id:
     | '__root__'
@@ -204,6 +216,7 @@ export interface FileRouteTypes {
     | '/_app/employer/'
     | '/_app/navigator/'
     | '/_app/patient/'
+    | '/_app/navigator/member/$memberId'
     | '/_app/patient/action/$actionId'
   fileRoutesById: FileRoutesById
 }
@@ -327,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPatientActionActionIdRouteImport
       parentRoute: typeof AppPatientRoute
     }
+    '/_app/navigator/member/$memberId': {
+      id: '/_app/navigator/member/$memberId'
+      path: '/member/$memberId'
+      fullPath: '/navigator/member/$memberId'
+      preLoaderRoute: typeof AppNavigatorMemberMemberIdRouteImport
+      parentRoute: typeof AppNavigatorRoute
+    }
   }
 }
 
@@ -356,10 +376,12 @@ const AppEmployerRouteWithChildren = AppEmployerRoute._addFileChildren(
 
 interface AppNavigatorRouteChildren {
   AppNavigatorIndexRoute: typeof AppNavigatorIndexRoute
+  AppNavigatorMemberMemberIdRoute: typeof AppNavigatorMemberMemberIdRoute
 }
 
 const AppNavigatorRouteChildren: AppNavigatorRouteChildren = {
   AppNavigatorIndexRoute: AppNavigatorIndexRoute,
+  AppNavigatorMemberMemberIdRoute: AppNavigatorMemberMemberIdRoute,
 }
 
 const AppNavigatorRouteWithChildren = AppNavigatorRoute._addFileChildren(
@@ -412,13 +434,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
