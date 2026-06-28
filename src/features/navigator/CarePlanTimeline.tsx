@@ -154,7 +154,7 @@ export function CarePlanTimeline({
                 {isAutoCompleted && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', background: '#0E8C7F', color: '#fff', fontSize: '11.5px', fontWeight: 600, letterSpacing: '0.01em' }}>
                     <Zap size={14} strokeWidth={1.75} />
-                    Auto-completed from diagnostics event{action.updated_at ? ` · ${format(new Date(action.updated_at), 'd MMM')}` : ''}
+                    Auto-completed from diagnostics event{(action.due_date ?? action.created_at) ? ` · ${format(new Date((action.due_date ?? action.created_at)!), 'd MMM')}` : ''}
                   </div>
                 )}
                 <div style={{ padding: '15px 17px' }}>

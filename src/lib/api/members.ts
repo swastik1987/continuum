@@ -44,7 +44,11 @@ export async function getMemberForDemoRole(role: string): Promise<MemberRow | nu
       typeof rpcResult === 'string'
         ? rpcResult
         : Array.isArray(rpcResult)
-          ? String((rpcResult as Array<{ member_id: string } | string>)[0]?.member_id ?? (rpcResult as string[])[0] ?? '')
+          ? String(
+              typeof rpcResult[0] === 'string'
+                ? rpcResult[0]
+                : (rpcResult[0] as { member_id?: string })?.member_id ?? '',
+            )
           : null
     if (id) {
       const m = await getMember(id)

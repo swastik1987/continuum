@@ -454,7 +454,7 @@ export function WorklistPage() {
                   {/* Trigger */}
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', fontWeight: 500, color: '#3A4A5E' }}>
-                      {trig && <TrigIcon size={15} strokeWidth={1.75} style={{ color: trig.color, flexShrink: 0 }} />}
+                      {trig && <span style={{ color: trig.color, flexShrink: 0, display: 'inline-flex' }}><TrigIcon size={15} strokeWidth={1.75} /></span>}
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {trig?.label ?? task.trigger_reason}
                       </span>

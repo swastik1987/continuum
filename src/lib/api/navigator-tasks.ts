@@ -37,7 +37,7 @@ export async function listNavigatorTasks(
   const { data } = await query
 
   // Supabase join returns member as object; cast to our type
-  return (data ?? []) as NavigatorTaskWithMember[]
+  return (data ?? []) as unknown as NavigatorTaskWithMember[]
 }
 
 export async function getNavigatorTask(taskId: string): Promise<NavigatorTaskWithMember | null> {
@@ -47,7 +47,7 @@ export async function getNavigatorTask(taskId: string): Promise<NavigatorTaskWit
     .eq('id', taskId)
     .single()
 
-  return data ? (data as NavigatorTaskWithMember) : null
+  return data ? (data as unknown as NavigatorTaskWithMember) : null
 }
 
 export async function updateTaskStatus(

@@ -107,7 +107,7 @@ export async function listConsultationsForMember(memberId: string): Promise<Cons
     .eq('member_id', memberId)
     .order('consulted_at', { ascending: false })
 
-  return (data ?? []) as ConsultationWithProvider[]
+  return (data ?? []) as unknown as ConsultationWithProvider[]
 }
 
 // ── Care Plan Builder API ──────────────────────────────────────────────────
@@ -123,7 +123,7 @@ export async function listConsultations(): Promise<ConsultationWithMeta[]> {
     .select('*, member:members(id,full_name,dob), provider:providers(id,full_name,specialty)')
     .order('consulted_at', { ascending: false })
 
-  return (data ?? []) as ConsultationWithMeta[]
+  return (data ?? []) as unknown as ConsultationWithMeta[]
 }
 
 type ActionPatch = {
