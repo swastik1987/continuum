@@ -31,17 +31,15 @@ export async function getMember(memberId: string): Promise<MemberRow | null> {
   return data ?? null
 }
 
-// Used by useMember hook to give admin a demo patient view when they have no member_id
+// Used by useMember hook to give admin a demo patient view when they have no member_id.
+// Uses a SECURITY DEFINER RPC to bypass profiles RLS (profiles RLS is scoped per-user).
 export async function getMemberForDemoRole(role: string): Promise<MemberRow | null> {
-  const { data } = await supabase
-    .from('profiles')
-    .select('member_id')
-    .eq('role', role)
-    .not('member_id', 'is', null)
-    .limit(1)
-    .maybeSingle()
-  if (!data?.member_id) return null
-  return getMember(data.member_id)
+  if (role === 'patient') {
+    const { data: memberId } = await supabase.rpc('get_demo_patient_member_id')
+    if (!memberId) return null
+    return getMember(memberId as string)
+  }
+  return null
 }
 
 export async function listMembersForOrg(orgId: string): Promise<MemberRow[]> {
