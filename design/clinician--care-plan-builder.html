@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#DEDAD3;display:flex;justify-content:center;padding:24px;}
+  input{font-family:inherit;}
+  input::placeholder{color:#A2AAB4;}
+  .cpb-scroll::-webkit-scrollbar{width:10px;}
+  .cpb-scroll::-webkit-scrollbar-thumb{background:#E0DDD6;border-radius:99px;border:3px solid #F7F6F3;}
+  input[type=date]{color:#13233A;}
+</style>
+</helmet>
+
+<div style="width:1440px;height:960px;background:#F7F6F3;border-radius:18px;border:1px solid #D7D3CC;box-shadow:0 30px 80px -30px rgba(19,35,58,.4);overflow:hidden;display:flex;flex-direction:column;color:#13233A;position:relative;">
+
+  <!-- ============ TOP BAR ============ -->
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:#fff;border-bottom:1px solid #ECEAE5;flex-shrink:0;z-index:2;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <svg width="30" height="30" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="17" stroke="#E2EFEC" stroke-width="5"/><circle cx="22" cy="22" r="17" stroke="#0E8C7F" stroke-width="5" stroke-linecap="round" stroke-dasharray="80 107" transform="rotate(-90 22 22)"/></svg>
+      <div style="width:1px;height:30px;background:#ECEAE5;"></div>
+      <div>
+        <div style="font-size:19px;font-weight:600;letter-spacing:-0.02em;line-height:1;">Care-Plan Builder</div>
+        <div style="font-size:12.5px;color:#8794A5;margin-top:4px;">Consult #CN-4471 · turning today's visit into a trackable plan</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:#8794A5;font-weight:500;"><i data-lucide="cloud" style="width:15px;height:15px;"></i>Draft saved · just now</div>
+      <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#fff;color:#13233A;border:1px solid #E4E2DD;border-radius:10px;padding:10px 15px;font-size:13.5px;font-weight:600;cursor:pointer;"><i data-lucide="eye" style="width:16px;height:16px;color:#5A6B80;"></i>Preview</button>
+      <button onClick="{{ publish }}" style="font-family:inherit;display:inline-flex;align-items:center;gap:8px;background:#0E8C7F;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);" style-hover="background:#0B6F64;"><i data-lucide="send" style="width:16px;height:16px;"></i>Publish care plan</button>
+    </div>
+  </header>
+
+  <!-- ============ BODY ============ -->
+  <div style="flex:1;min-height:0;display:flex;">
+
+    <!-- ====== LEFT · CONSULT SUMMARY ====== -->
+    <aside class="cpb-scroll" style="width:316px;flex-shrink:0;background:#fff;border-right:1px solid #ECEAE5;overflow-y:auto;padding:22px 22px 28px;">
+      <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#8794A5;margin-bottom:16px;"><i data-lucide="clipboard-list" style="width:14px;height:14px;color:#0E8C7F;"></i>Consult summary</div>
+
+      <!-- patient identity -->
+      <div style="display:flex;align-items:center;gap:13px;">
+        <div style="width:48px;height:48px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0;">AI</div>
+        <div style="min-width:0;">
+          <div style="font-size:16.5px;font-weight:600;letter-spacing:-0.01em;">Ananya Iyer</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">46 · Female · MRN 88-201-447</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:7px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>New diagnosis</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:7px;background:#EEF1F5;color:#475569;font-size:12px;font-weight:600;">Type 2 diabetes</span>
+      </div>
+
+      <!-- consult meta -->
+      <div style="margin-top:20px;padding:14px 16px;border-radius:13px;background:#F7F6F3;border:1px solid #ECEAE5;">
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#3A4A5E;"><i data-lucide="video" style="width:16px;height:16px;color:#0E8C7F;"></i>Video consult · 27 Jun 2026</div>
+        <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#3A4A5E;margin-top:11px;"><i data-lucide="stethoscope" style="width:16px;height:16px;color:#0E8C7F;"></i>Dr. Priya Mehra · Endocrinology</div>
+      </div>
+
+      <!-- chief complaint -->
+      <div style="margin-top:22px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8794A5;margin-bottom:9px;">Chief complaint</div>
+        <div style="font-size:14px;font-weight:600;letter-spacing:-0.01em;line-height:1.45;">Increased thirst and fatigue over the past 6 weeks.</div>
+      </div>
+
+      <!-- vitals -->
+      <div style="margin-top:22px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8794A5;margin-bottom:11px;">Today's readings</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+          <div style="padding:11px 13px;border-radius:11px;border:1px solid #F1CFCD;background:#FAE8E7;">
+            <div style="font-size:11px;color:#A8332F;font-weight:600;">Fasting glucose</div>
+            <div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;color:#A8332F;margin-top:3px;">142<span style="font-size:11px;font-weight:500;"> mg/dL</span></div>
+          </div>
+          <div style="padding:11px 13px;border-radius:11px;border:1px solid #ECEAE5;background:#F7F6F3;">
+            <div style="font-size:11px;color:#8794A5;font-weight:600;">Blood pressure</div>
+            <div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px;">138/86</div>
+          </div>
+          <div style="padding:11px 13px;border-radius:11px;border:1px solid #ECEAE5;background:#F7F6F3;">
+            <div style="font-size:11px;color:#8794A5;font-weight:600;">BMI</div>
+            <div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px;">28.4</div>
+          </div>
+          <div style="padding:11px 13px;border-radius:11px;border:1px solid #ECEAE5;background:#F7F6F3;">
+            <div style="font-size:11px;color:#8794A5;font-weight:600;">HbA1c</div>
+            <div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px;color:#8794A5;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- notes -->
+      <div style="margin-top:22px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8794A5;margin-bottom:9px;">Clinical notes</div>
+        <div style="font-size:13px;color:#3A4A5E;line-height:1.6;">Presents with classic hyperglycaemia symptoms. Fasting glucose elevated. Likely new Type 2 diabetes — confirm with HbA1c. Start first-line metformin, lifestyle counselling, and structured follow-up to track response.</div>
+      </div>
+    </aside>
+
+    <!-- ====== CENTRE · BUILDER ====== -->
+    <main class="cpb-scroll" style="flex:1;min-width:0;overflow-y:auto;padding:24px 30px 40px;">
+
+      <!-- authored heading -->
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+        <div>
+          <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em;margin:0;">Next steps</h2>
+          <p style="font-size:13.5px;color:#5A6B80;margin:5px 0 0;">The structured actions Continuum will track until they're done.</p>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:8px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:12.5px;font-weight:600;"><i data-lucide="shield-check" style="width:15px;height:15px;"></i>{{ authoredCount }} authored by you</span>
+      </div>
+
+      <!-- authored rows -->
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">
+        <sc-for list="{{ authored }}" as="a" hint-placeholder-count="3">
+          <div style="{{ a.cardStyle }}">
+            <!-- row top -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <button onClick="{{ a.cycleType }}" title="Click to change action type" style="font-family:inherit;display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid #E4E2DD;border-radius:9px;padding:7px 11px 7px 9px;font-size:13px;font-weight:600;color:#13233A;cursor:pointer;" style-hover="background:#F7F6F3;">
+                <span style="width:26px;height:26px;border-radius:7px;background:#EDF4F3;color:#0B6F64;display:flex;align-items:center;justify-content:center;"><i data-lucide="{{ a.icon }}" style="width:16px;height:16px;"></i></span>
+                {{ a.type }}
+                <i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:#A2AAB4;"></i>
+              </button>
+              <button onClick="{{ a.remove }}" title="Remove action" style="font-family:inherit;width:32px;height:32px;border-radius:8px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#A2AAB4;" style-hover="background:#FAE8E7;color:#A8332F;"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
+            </div>
+
+            <!-- title -->
+            <input value="{{ a.title }}" onChange="{{ a.onTitle }}" placeholder="Action title" style="width:100%;border:none;outline:none;background:transparent;font-size:16px;font-weight:600;letter-spacing:-0.01em;color:#13233A;padding:14px 2px 8px;border-bottom:1px solid #F0EEEA;"/>
+
+            <!-- why -->
+            <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+              <i data-lucide="message-square-text" style="width:15px;height:15px;color:#A2AAB4;flex-shrink:0;"></i>
+              <input value="{{ a.why }}" onChange="{{ a.onWhy }}" placeholder="Plain-language reason the patient will read…" style="flex:1;border:none;outline:none;background:transparent;font-size:13.5px;color:#3A4A5E;padding:2px 0;"/>
+            </div>
+
+            <!-- controls -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:15px;border-top:1px solid #F0EEEA;flex-wrap:wrap;">
+              <div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#A2AAB4;margin-bottom:7px;">Clinical priority</div>
+                <div style="display:flex;gap:6px;">
+                  <sc-for list="{{ a.prioSegs }}" as="seg" hint-placeholder-count="3">
+                    <button onClick="{{ seg.onClick }}" style="{{ seg.style }}">{{ seg.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#A2AAB4;margin-bottom:7px;">Due by</div>
+                <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E4E2DD;border-radius:9px;padding:8px 11px;">
+                  <i data-lucide="calendar" style="width:15px;height:15px;color:#5A6B80;"></i>
+                  <input type="date" value="{{ a.due }}" onChange="{{ a.onDue }}" style="border:none;outline:none;background:transparent;font-size:13px;font-weight:600;color:#13233A;"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- add action -->
+      <button onClick="{{ addAction }}" style="font-family:inherit;width:100%;margin-top:14px;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:transparent;border:1.5px dashed #CFCABF;border-radius:14px;padding:15px;font-size:14px;font-weight:600;color:#5A6B80;cursor:pointer;" style-hover="background:#fff;border-color:#0E8C7F;color:#0B6F64;"><i data-lucide="plus" style="width:18px;height:18px;"></i>Add a care-plan action</button>
+
+      <!-- suggested by continuum -->
+      <div style="margin-top:34px;">
+        <div style="display:flex;align-items:center;gap:11px;">
+          <span style="width:30px;height:30px;border-radius:8px;background:#F4F2EE;border:1px dashed #D6D0C4;color:#6B6256;display:flex;align-items:center;justify-content:center;"><i data-lucide="sparkles" style="width:17px;height:17px;"></i></span>
+          <div>
+            <div style="font-size:16px;font-weight:600;letter-spacing:-0.01em;">Suggested by Continuum</div>
+            <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">System-generated from the consult. Nothing here reaches the patient until you confirm it.</div>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSuggestions }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:13px;margin-top:16px;">
+            <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="2">
+              <div style="position:relative;background:#FBFAF8;border:1.5px dashed #D2CCC0;border-radius:16px;padding:18px;">
+                <span style="position:absolute;top:14px;right:16px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:7px;background:#F4F2EE;border:1px solid #E4E1DA;color:#6B6256;font-size:11.5px;font-weight:600;"><i data-lucide="sparkles" style="width:13px;height:13px;"></i>AI-suggested</span>
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <span style="width:38px;height:38px;border-radius:10px;background:#F1EEE9;border:1px dashed #D6D0C4;color:#6B6256;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="{{ s.icon }}" style="width:20px;height:20px;"></i></span>
+                  <div style="min-width:0;">
+                    <div style="font-size:11px;color:#8794A5;font-weight:600;">{{ s.type }}</div>
+                    <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;">{{ s.title }}</div>
+                  </div>
+                </div>
+                <div style="font-size:13.5px;color:#3A4A5E;line-height:1.5;margin-top:13px;">{{ s.why }}</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:13px;">
+                  <span style="{{ s.prioPill }}"><span style="{{ s.prioDot }}"></span>{{ s.priority }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#5A6B80;"><i data-lucide="calendar" style="width:14px;height:14px;"></i>Due {{ s.dueLabel }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:13px;padding-top:13px;border-top:1px dashed #E2DCD0;">
+                  <i data-lucide="info" style="width:14px;height:14px;color:#A2AAB4;flex-shrink:0;"></i>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;line-height:1.4;">{{ s.rationale }}</span>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:15px;">
+                  <button onClick="{{ s.confirm }}" style="font-family:inherit;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#0E8C7F;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);" style-hover="background:#0B6F64;"><i data-lucide="check" style="width:16px;height:16px;"></i>Confirm &amp; authorise</button>
+                  <button onClick="{{ s.dismiss }}" style="font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#fff;color:#5A6B80;border:1px solid #E4E2DD;border-radius:10px;padding:11px 16px;font-size:13.5px;font-weight:600;cursor:pointer;" style-hover="background:#FAE8E7;border-color:#F1CFCD;color:#A8332F;"><i data-lucide="x" style="width:16px;height:16px;"></i>Dismiss</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ noSuggestions }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:16px;display:flex;align-items:center;gap:12px;padding:18px;border-radius:14px;border:1.5px dashed #D2CCC0;background:#FBFAF8;color:#8794A5;">
+            <i data-lucide="check-check" style="width:20px;height:20px;color:#1F9D55;"></i>
+            <span style="font-size:13.5px;font-weight:500;">All suggestions reviewed. Every action in this plan was authored or authorised by you.</span>
+          </div>
+        </sc-if>
+      </div>
+    </main>
+
+    <!-- ====== RIGHT · PATIENT PREVIEW ====== -->
+    <aside class="cpb-scroll" style="width:404px;flex-shrink:0;background:#EFEDE8;border-left:1px solid #E4E2DD;overflow-y:auto;padding:22px 22px 34px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#8794A5;"><i data-lucide="smartphone" style="width:14px;height:14px;color:#0E8C7F;"></i>Patient preview</div>
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#0B6F64;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Live</span>
+      </div>
+
+      <!-- phone -->
+      <div style="width:360px;margin:0 auto;background:#F7F6F3;border-radius:38px;border:1px solid #E4E2DD;box-shadow:0 24px 60px -28px rgba(19,35,58,.4);overflow:hidden;">
+        <!-- status bar -->
+        <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 30px;">
+          <span style="font-size:13px;font-weight:600;">9:41</span>
+          <div style="display:flex;align-items:center;gap:6px;"><i data-lucide="signal" style="width:15px;height:15px;"></i><i data-lucide="wifi" style="width:15px;height:15px;"></i><i data-lucide="battery-full" style="width:19px;height:19px;"></i></div>
+        </div>
+
+        <div style="padding:6px 18px 22px;">
+          <!-- greeting -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:6px 2px 16px;">
+            <div>
+              <div style="font-size:23px;font-weight:600;letter-spacing:-0.02em;line-height:1.1;">Hi Ananya</div>
+              <div style="font-size:12.5px;color:#5A6B80;margin-top:5px;">Your care plan from Dr. Mehra · 27 Jun</div>
+            </div>
+            <div style="width:38px;height:38px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">AN</div>
+          </div>
+
+          <!-- progress ring -->
+          <div style="background:#fff;border:1px solid #EDEBE6;border-radius:18px;padding:17px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 12px 30px -20px rgba(19,35,58,.18);display:flex;align-items:center;gap:17px;">
+            <svg width="78" height="78" viewBox="0 0 92 92" style="flex-shrink:0;">
+              <circle cx="46" cy="46" r="39" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+              <circle cx="46" cy="46" r="39" fill="none" stroke="#0E8C7F" stroke-width="9" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="245" transform="rotate(-90 46 46)"/>
+              <text x="46" y="42" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#13233A" style="font-variant-numeric:tabular-nums;">0/{{ authoredCount }}</text>
+              <text x="46" y="58" text-anchor="middle" font-family="Inter" font-size="9.5" font-weight="500" fill="#8794A5" letter-spacing="0.5">STEPS</text>
+            </svg>
+            <div>
+              <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;">Your plan is ready</div>
+              <div style="font-size:12.5px;color:#5A6B80;line-height:1.45;margin-top:4px;">{{ authoredCount }} steps to keep you on track. Let's start with the first.</div>
+            </div>
+          </div>
+
+          <!-- next steps label -->
+          <div style="font-size:15px;font-weight:600;letter-spacing:-0.01em;margin:20px 4px 12px;">Next steps</div>
+
+          <!-- preview cards -->
+          <div style="display:flex;flex-direction:column;gap:11px;">
+            <sc-for list="{{ previewCards }}" as="p" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #EDEBE6;border-left:3px solid {{ p.accent }};border-radius:15px;padding:15px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 26px -22px rgba(19,35,58,.22);">
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <span style="width:38px;height:38px;border-radius:11px;background:{{ p.iconBg }};color:{{ p.iconColor }};display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="{{ p.icon }}" style="width:19px;height:19px;"></i></span>
+                  <div style="min-width:0;flex:1;">
+                    <div style="font-size:14.5px;font-weight:600;letter-spacing:-0.01em;">{{ p.title }}</div>
+                    <div style="font-size:11.5px;color:#8794A5;margin-top:2px;">{{ p.type }}</div>
+                  </div>
+                  <span style="{{ p.prioPill }}"><span style="{{ p.prioDot }}"></span>{{ p.priority }}</span>
+                </div>
+                <div style="font-size:12.5px;color:#3A4A5E;line-height:1.5;margin-top:11px;">{{ p.why }}</div>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:11px;">
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#5A6B80;"><i data-lucide="calendar" style="width:13px;height:13px;"></i>Due {{ p.dueLabel }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:10.5px;font-weight:600;"><i data-lucide="shield-check" style="width:11px;height:11px;"></i>Clinician-authored</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- chat card -->
+          <div style="display:flex;align-items:center;gap:12px;background:#13233A;border-radius:15px;padding:14px 15px;margin-top:14px;">
+            <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="messages-square" style="width:19px;height:19px;"></i></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:600;color:#fff;">Questions? Chat with your care team</div>
+              <div style="font-size:11.5px;color:rgba(255,255,255,.6);margin-top:2px;">Usually replies within an hour</div>
+            </div>
+            <i data-lucide="chevron-right" style="width:17px;height:17px;color:rgba(255,255,255,.55);"></i>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:11.5px;color:#8794A5;text-align:center;"><i data-lucide="lock" style="width:13px;height:13px;"></i>Updates live as you build · published only when you hit Publish</div>
+    </aside>
+
+  </div>
+
+  <!-- ============ PUBLISH TOAST ============ -->
+  <div style="{{ toastStyle }}">
+    <span style="width:30px;height:30px;border-radius:99px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="check" style="width:18px;height:18px;color:#fff;"></i></span>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#fff;">Care plan published</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:1px;">{{ authoredCount }} actions sent to Ananya · she's been notified</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    nextId: 100,
+    published: false,
+    actions: [
+      { id: 1, type: 'Medication', title: 'Start Metformin 500 mg', why: 'Helps bring your blood sugar into a healthy range.', priority: 'Mandatory', due: '2026-06-28' },
+      { id: 2, type: 'Lab test', title: 'Fasting blood sugar test', why: 'To check whether your sugar levels are improving.', priority: 'Mandatory', due: '2026-07-02' },
+      { id: 3, type: 'Follow-up consult', title: 'Follow-up with Dr. Mehra', why: 'To review your results together and adjust the plan.', priority: 'Recommended', due: '2026-07-09' }
+    ],
+    suggestions: [
+      { id: 51, type: 'Lab test', title: 'HbA1c (3-month average)', why: 'Confirms the diagnosis and gives a baseline to track long-term control against.', priority: 'Recommended', due: '2026-07-10', rationale: 'From note: "confirm with HbA1c"' },
+      { id: 52, type: 'Lifestyle', title: 'Dietitian referral', why: 'Structured nutrition support improves glucose control alongside medication.', priority: 'Optional', due: '2026-07-20', rationale: 'Care pathway: new Type 2 diabetes' }
+    ]
+  };
+
+  componentDidMount() { this.drawIcons(); }
+  componentDidUpdate() { this.drawIcons(); }
+  drawIcons() {
+    if (window.lucide) { try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {} }
+    else { setTimeout(() => this.drawIcons(), 120); }
+  }
+
+  TYPES() {
+    return {
+      'Lab test': 'flask-conical',
+      'Follow-up consult': 'stethoscope',
+      'Medication': 'pill',
+      'Vaccination': 'syringe',
+      'Lifestyle': 'heart-pulse',
+      'Imaging': 'scan'
+    };
+  }
+  PRIO() {
+    return {
+      Mandatory:   { bg: '#FAE8E7', color: '#A8332F', dot: '#D24B47', accent: '#D24B47' },
+      Recommended: { bg: '#EDF4F3', color: '#0B6F64', dot: '#0E8C7F', accent: '#0E8C7F' },
+      Optional:    { bg: '#EEF1F5', color: '#475569', dot: '#64748B', accent: '#64748B' }
+    };
+  }
+  PRIO_ICON() {
+    return { Mandatory: '#F1CFCD', Recommended: '#CFE6E1', Optional: '#DEE4EC' };
+  }
+
+  fmt(iso) {
+    if (!iso) return '—';
+    const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const d = new Date(iso + 'T00:00');
+    if (isNaN(d)) return iso;
+    return d.getDate() + ' ' + M[d.getMonth()];
+  }
+
+  update(id, patch) {
+    this.setState(s => ({ actions: s.actions.map(a => a.id === id ? { ...a, ...patch } : a) }));
+  }
+  cycleType(id) {
+    const order = Object.keys(this.TYPES());
+    this.setState(s => ({
+      actions: s.actions.map(a => {
+        if (a.id !== id) return a;
+        const i = order.indexOf(a.type);
+        return { ...a, type: order[(i + 1) % order.length] };
+      })
+    }));
+  }
+  removeAction(id) {
+    this.setState(s => ({ actions: s.actions.filter(a => a.id !== id) }));
+  }
+  addAction() {
+    this.setState(s => {
+      const id = s.nextId + 1;
+      return {
+        nextId: id,
+        actions: [...s.actions, { id, type: 'Lab test', title: '', why: '', priority: 'Recommended', due: '2026-07-15' }]
+      };
+    });
+  }
+  confirm(id) {
+    this.setState(s => {
+      const sug = s.suggestions.find(x => x.id === id);
+      if (!sug) return {};
+      const nid = s.nextId + 1;
+      const { rationale, ...rest } = sug;
+      return {
+        nextId: nid,
+        actions: [...s.actions, { ...rest, id: nid }],
+        suggestions: s.suggestions.filter(x => x.id !== id)
+      };
+    });
+  }
+  dismiss(id) {
+    this.setState(s => ({ suggestions: s.suggestions.filter(x => x.id !== id) }));
+  }
+  publish() {
+    this.setState({ published: true });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ published: false }), 3200);
+  }
+
+  renderVals() {
+    const TYPES = this.TYPES(), PRIO = this.PRIO(), PRIO_ICON = this.PRIO_ICON();
+    const prioOrder = ['Mandatory', 'Recommended', 'Optional'];
+
+    const pill = (p) => `display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:${PRIO[p].bg};color:${PRIO[p].color};font-size:11.5px;font-weight:600;flex-shrink:0;white-space:nowrap;`;
+    const dot = (p) => `width:6px;height:6px;border-radius:99px;background:${PRIO[p].dot};`;
+
+    const authored = this.state.actions.map(a => ({
+      cardStyle: `background:#fff;border:1px solid #EDEBE6;border-left:3px solid ${PRIO[a.priority].accent};border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 12px 30px -24px rgba(19,35,58,.2);`,
+      icon: TYPES[a.type],
+      type: a.type,
+      title: a.title,
+      why: a.why,
+      due: a.due,
+      cycleType: () => this.cycleType(a.id),
+      remove: () => this.removeAction(a.id),
+      onTitle: (e) => this.update(a.id, { title: e.target.value }),
+      onWhy: (e) => this.update(a.id, { why: e.target.value }),
+      onDue: (e) => this.update(a.id, { due: e.target.value }),
+      prioSegs: prioOrder.map(p => {
+        const active = a.priority === p;
+        return {
+          label: p,
+          onClick: () => this.update(a.id, { priority: p }),
+          style: active
+            ? `font-family:inherit;cursor:pointer;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;background:${PRIO[p].bg};color:${PRIO[p].color};border:1px solid ${PRIO_ICON[p]};display:inline-flex;align-items:center;gap:6px;`
+            : `font-family:inherit;cursor:pointer;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;background:#fff;color:#8794A5;border:1px solid #E4E2DD;`
+        };
+      })
+    }));
+
+    const suggestions = this.state.suggestions.map(s => ({
+      icon: TYPES[s.type],
+      type: s.type,
+      title: s.title,
+      why: s.why,
+      priority: s.priority,
+      prioPill: pill(s.priority),
+      prioDot: dot(s.priority),
+      dueLabel: this.fmt(s.due),
+      rationale: s.rationale,
+      confirm: () => this.confirm(s.id),
+      dismiss: () => this.dismiss(s.id)
+    }));
+
+    const previewCards = this.state.actions.map(a => ({
+      icon: TYPES[a.type],
+      type: a.type,
+      title: a.title || 'Untitled action',
+      why: a.why || 'Add a reason the patient will read.',
+      priority: a.priority,
+      accent: PRIO[a.priority].accent,
+      iconBg: PRIO[a.priority].bg,
+      iconColor: PRIO[a.priority].color,
+      prioPill: pill(a.priority),
+      prioDot: dot(a.priority),
+      dueLabel: this.fmt(a.due)
+    }));
+
+    const toastBase = 'position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:#13233A;border-radius:14px;padding:13px 18px;box-shadow:0 20px 50px -16px rgba(19,35,58,.5);z-index:5;transition:opacity .25s,transform .25s;';
+    const toastStyle = this.state.published
+      ? toastBase + 'opacity:1;'
+      : toastBase + 'opacity:0;pointer-events:none;transform:translateX(-50%) translateY(12px);';
+
+    return {
+      authored,
+      authoredCount: this.state.actions.length,
+      suggestions,
+      hasSuggestions: this.state.suggestions.length > 0,
+      noSuggestions: this.state.suggestions.length === 0,
+      previewCards,
+      addAction: () => this.addAction(),
+      publish: () => this.publish(),
+      toastStyle
+    };
+  }
+}
+</script>
+</body>
+</html>

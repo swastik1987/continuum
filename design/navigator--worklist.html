@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#DEDAD3;display:flex;justify-content:center;padding:24px;}
+</style>
+</helmet>
+
+<div style="width:1440px;height:940px;background:#F7F6F3;border-radius:18px;border:1px solid #D7D3CC;box-shadow:0 30px 80px -30px rgba(19,35,58,.4);overflow:hidden;display:flex;color:#13233A;">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside style="width:236px;background:#fff;border-right:1px solid #ECEAE5;display:flex;flex-direction:column;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:11px;padding:24px 22px 22px;">
+      <svg width="30" height="30" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="17" stroke="#E2EFEC" stroke-width="5"/><circle cx="22" cy="22" r="17" stroke="#0E8C7F" stroke-width="5" stroke-linecap="round" stroke-dasharray="80 107" transform="rotate(-90 22 22)"/></svg>
+      <div>
+        <div style="font-size:17px;font-weight:600;letter-spacing:-0.02em;line-height:1;">Continuum</div>
+        <div style="font-size:10.5px;color:#8794A5;margin-top:3px;font-weight:500;letter-spacing:0.02em;">NAVIGATOR CONSOLE</div>
+      </div>
+    </div>
+
+    <nav style="padding:8px 14px;display:flex;flex-direction:column;gap:3px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:11px;background:#EDF4F3;color:#0B6F64;font-size:14px;font-weight:600;position:relative;">
+        <span style="position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:9px;background:#0E8C7F;"></span>
+        <i data-lucide="layout-list" style="width:19px;height:19px;"></i>Worklist
+        <span style="margin-left:auto;font-size:11px;font-weight:600;background:#0E8C7F;color:#fff;border-radius:999px;padding:1px 8px;">14</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:11px;color:#5A6B80;font-size:14px;font-weight:500;cursor:pointer;"><i data-lucide="users" style="width:19px;height:19px;"></i>My Patients</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:11px;color:#5A6B80;font-size:14px;font-weight:500;cursor:pointer;"><i data-lucide="check-square" style="width:19px;height:19px;"></i>Tasks</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:11px;color:#5A6B80;font-size:14px;font-weight:500;cursor:pointer;"><i data-lucide="search" style="width:19px;height:19px;"></i>Search</div>
+    </nav>
+
+    <div style="margin-top:auto;padding:16px 14px;border-top:1px solid #F0EEEA;">
+      <div style="display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:11px;">
+        <div style="width:36px;height:36px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">PS</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13.5px;font-weight:600;">Priya Sharma</div>
+          <div style="font-size:11.5px;color:#8794A5;">Care Navigator</div>
+        </div>
+        <i data-lucide="settings" style="width:17px;height:17px;color:#A2AAB4;cursor:pointer;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;">
+
+    <!-- top bar -->
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:#fff;border-bottom:1px solid #ECEAE5;flex-shrink:0;">
+      <div>
+        <div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;">Navigator Worklist</div>
+        <div style="font-size:13px;color:#8794A5;margin-top:3px;">Thursday, 26 June 2026 · prioritised for you</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:13px;background:#F7F6F3;border:1px solid #ECEAE5;">
+          <i data-lucide="inbox" style="width:18px;height:18px;color:#5A6B80;"></i>
+          <div><div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1;">14</div><div style="font-size:11px;color:#8794A5;margin-top:3px;">Open tasks</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:13px;background:#F7F6F3;border:1px solid #ECEAE5;">
+          <i data-lucide="circle-check-big" style="width:18px;height:18px;color:#1F9D55;"></i>
+          <div><div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1;">6</div><div style="font-size:11px;color:#8794A5;margin-top:3px;">Resolved today</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:13px;background:#FAE8E7;border:1px solid #F1CFCD;">
+          <i data-lucide="alert-triangle" style="width:18px;height:18px;color:#D24B47;"></i>
+          <div><div style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1;color:#A8332F;">2</div><div style="font-size:11px;color:#A8332F;margin-top:3px;">P1 urgent</div></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- filters -->
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 28px;flex-shrink:0;">
+      <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#8794A5;"><i data-lucide="sliders-horizontal" style="width:15px;height:15px;"></i>Filter</span>
+      <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E4E2DD;border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:#13233A;cursor:pointer;">Priority<i data-lucide="chevron-down" style="width:14px;height:14px;color:#8794A5;"></i></button>
+      <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E4E2DD;border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:#13233A;cursor:pointer;">Risk tier<i data-lucide="chevron-down" style="width:14px;height:14px;color:#8794A5;"></i></button>
+      <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #E4E2DD;border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:#13233A;cursor:pointer;">Segment<i data-lucide="chevron-down" style="width:14px;height:14px;color:#8794A5;"></i></button>
+      <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#EDF4F3;border:1px solid #BFDCD7;border-radius:10px;padding:8px 13px;font-size:13px;font-weight:600;color:#0B6F64;cursor:pointer;">Trigger: Declined<i data-lucide="x" style="width:14px;height:14px;"></i></button>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:14px;">
+        <span style="font-size:12.5px;color:#8794A5;">Sorted by <span style="color:#13233A;font-weight:600;">priority</span></span>
+        <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E4E2DD;border-radius:10px;padding:8px 12px;width:220px;">
+          <i data-lucide="search" style="width:15px;height:15px;color:#A2AAB4;"></i>
+          <span style="font-size:13px;color:#A2AAB4;">Search patients…</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- table -->
+    <div style="flex:1;overflow:hidden;padding:0 28px 28px;">
+      <div style="background:#fff;border:1px solid #ECEAE5;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 14px 34px -24px rgba(19,35,58,.18);height:100%;display:flex;flex-direction:column;">
+
+        <!-- column header -->
+        <div style="display:grid;grid-template-columns:78px 184px 84px 142px 230px 1fr 158px;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #ECEAE5;background:#FBFAF8;font-size:11px;font-weight:600;letter-spacing:0.06em;color:#8794A5;text-transform:uppercase;flex-shrink:0;">
+          <div>Priority</div><div>Patient</div><div>Risk</div><div>Segment</div><div>Trigger</div><div>Action at risk</div><div></div>
+        </div>
+
+        <!-- rows -->
+        <div style="overflow-y:auto;flex:1;">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+            <div style="{{ r.rowStyle }}">
+              <div><span style="{{ r.prioStyle }}">{{ r.prio }}</span></div>
+              <div style="min-width:0;">
+                <div style="font-size:14px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.name }}</div>
+                <div style="font-size:12px;color:#8794A5;margin-top:2px;">{{ r.meta }}</div>
+              </div>
+              <div><span style="{{ r.riskStyle }}">{{ r.risk }}</span></div>
+              <div><span style="{{ r.segStyle }}"><span style="{{ r.segDot }}"></span>{{ r.segment }}</span></div>
+              <div style="min-width:0;">
+                <div style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:#3A4A5E;"><i data-lucide="{{ r.trigIcon }}" style="{{ r.trigIconStyle }}"></i><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.trigger }}</span></div>
+                <div style="font-size:11.5px;color:#A2AAB4;margin-top:2px;padding-left:21px;">{{ r.trigSub }}</div>
+              </div>
+              <div style="min-width:0;">
+                <div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.action }}</div>
+                <div style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#A6620F;font-weight:600;margin-top:3px;"><i data-lucide="clock" style="width:12px;height:12px;"></i>{{ r.due }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px;justify-content:flex-end;">
+                <button title="Call" style="font-family:inherit;width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid #E4E2DD;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i data-lucide="phone" style="width:16px;height:16px;color:#0B6F64;"></i></button>
+                <button title="WhatsApp" style="font-family:inherit;width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid #E4E2DD;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i data-lucide="message-circle" style="width:16px;height:16px;color:#0B6F64;"></i></button>
+                <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#0E8C7F;color:#fff;border:none;border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;">Open</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() { this.drawIcons(); }
+  componentDidUpdate() { this.drawIcons(); }
+  drawIcons() {
+    if (window.lucide) { try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {} }
+    else { setTimeout(() => this.drawIcons(), 120); }
+  }
+
+  renderVals() {
+    const GRID = 'display:grid;grid-template-columns:78px 184px 84px 142px 230px 1fr 158px;align-items:center;gap:14px;padding:15px 20px;border-bottom:1px solid #F2F0EC;';
+
+    const prio = {
+      P1: 'display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 9px;border-radius:7px;background:#FAE8E7;color:#A8332F;font-size:12px;font-weight:700;letter-spacing:0.02em;',
+      P2: 'display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 9px;border-radius:7px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:700;letter-spacing:0.02em;',
+      P3: 'display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 9px;border-radius:7px;background:#EEF1F5;color:#475569;font-size:12px;font-weight:700;letter-spacing:0.02em;'
+    };
+    const risk = {
+      High: 'display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FAE8E7;color:#A8332F;font-size:12px;font-weight:600;',
+      Med:  'display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:600;',
+      Low:  'display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#EEF1F5;color:#475569;font-size:12px;font-weight:600;'
+    };
+    const SEG = {
+      green:  ['#E6F4EC', '#167A41', '#1F9D55'],
+      amber:  ['#FBEFDD', '#A6620F', '#D9821B'],
+      red:    ['#FAE8E7', '#A8332F', '#D24B47'],
+      slate:  ['#EEF1F5', '#475569', '#64748B'],
+      teal:   ['#EDF4F3', '#0B6F64', '#0E8C7F']
+    };
+    const segStyle = (k) => `display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:7px;background:${SEG[k][0]};color:${SEG[k][1]};font-size:12px;font-weight:600;white-space:nowrap;`;
+    const segDot = (k) => `width:6px;height:6px;border-radius:99px;background:${SEG[k][2]};flex-shrink:0;`;
+    const trigIcon = (c) => `width:15px;height:15px;color:${c};flex-shrink:0;`;
+
+    const data = [
+      { prio:'P1', name:'Dana Okafor', meta:'58 · Female', risk:'High', seg:'red', segment:'Avoidance', trigIcon:'circle-slash', trigC:'#D24B47', trigger:'Declined mandatory test', trigSub:'Declined 18 Jun · cited side effects', action:'Cardiac stress test', due:'Overdue 8d' },
+      { prio:'P1', name:'Marcus Hale', meta:'64 · Male', risk:'High', seg:'slate', segment:'Needs reminder', trigIcon:'activity', trigC:'#D24B47', trigger:'ER discharge — 72h follow-up', trigSub:'Discharged 24 Jun · window closing', action:'Discharge meds reconciliation', due:'Due in 11h' },
+      { prio:'P2', name:'James Thornton', meta:'47 · Male', risk:'Med', seg:'amber', segment:'Cost barrier', trigIcon:'rotate-ccw', trigC:'#D9821B', trigger:'Repeat drop-off (3×)', trigSub:'No-show on 3 reminders', action:'HbA1c lab', due:'Overdue 9d' },
+      { prio:'P2', name:'Lena Park', meta:'39 · Female', risk:'Med', seg:'red', segment:'Side effects', trigIcon:'circle-slash', trigC:'#D9821B', trigger:'Declined mandatory test', trigSub:'Declined 21 Jun', action:'Statin refill + review', due:'Overdue 5d' },
+      { prio:'P2', name:'Robert Closing', meta:'71 · Male', risk:'High', seg:'slate', segment:'Transport', trigIcon:'clock-alert', trigC:'#D9821B', trigger:'High-risk overdue', trigSub:'No transport to centre', action:'Anticoagulation INR test', due:'Overdue 12d' },
+      { prio:'P3', name:'Aisha Rahman', meta:'33 · Female', risk:'Low', seg:'green', segment:'Feels better', trigIcon:'rotate-ccw', trigC:'#64748B', trigger:'Repeat drop-off (2×)', trigSub:'Reports feeling well', action:'Follow-up consult', due:'Overdue 4d' },
+      { prio:'P3', name:'Tomás Vela', meta:'52 · Male', risk:'Med', seg:'slate', segment:'Needs reminder', trigIcon:'clock-alert', trigC:'#64748B', trigger:'High-risk overdue', trigSub:'Last contact 14 Jun', action:'Diabetic eye screening', due:'Overdue 6d' },
+      { prio:'P3', name:'Grace Mwangi', meta:'45 · Female', risk:'Low', seg:'teal', segment:'Re-engaged', trigIcon:'rotate-ccw', trigC:'#64748B', trigger:'Repeat drop-off', trigSub:'Re-opened app 25 Jun', action:'Lipid panel', due:'Due by 30 Jun' }
+    ];
+
+    const rows = data.map(d => ({
+      rowStyle: GRID + (d.prio === 'P1' ? 'border-left:3px solid #D24B47;background:#FDF6F5;' : 'border-left:3px solid transparent;'),
+      prio: d.prio, prioStyle: prio[d.prio],
+      name: d.name, meta: d.meta,
+      risk: d.risk, riskStyle: risk[d.risk],
+      segment: d.segment, segStyle: segStyle(d.seg), segDot: segDot(d.seg),
+      trigger: d.trigger, trigSub: d.trigSub, trigIcon: d.trigIcon, trigIconStyle: trigIcon(d.trigC),
+      action: d.action, due: d.due
+    }));
+
+    return { rows };
+  }
+}
+</script>
+</body>
+</html>

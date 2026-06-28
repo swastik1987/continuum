@@ -1,406 +1,454 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect, useRef, Fragment, type CSSProperties } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { ChevronLeft, Phone, MoreVertical, Info, CheckCheck, Loader, Plus, Send } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, isToday, isYesterday } from 'date-fns'
+import {
+  ChevronLeft, Phone, MoreVertical, Info,
+  CalendarCheck, HelpCircle, CheckCheck, Loader, Plus, Smile, Send,
+} from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/lib/auth/context'
-import { getMemberByProfileId, listMessages, insertMessage } from '@/lib/api'
+import { getMemberByProfileId } from '@/lib/api/members'
+import { listMessages, insertMessage } from '@/lib/api/messages'
 import type { MessageRow } from '@/lib/api/messages'
 
-const QUICK_REPLIES = [
-  'How is my care plan looking?',
-  'When is my next step due?',
-  'Can someone call me?',
-]
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-function isHandoffChip(msg: MessageRow) {
-  return msg.sender === 'system' && msg.body.startsWith('—')
+function dayLabel(dateStr: string | null): string {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  if (isToday(d)) return 'TODAY'
+  if (isYesterday(d)) return 'YESTERDAY'
+  return format(d, 'EEE, d MMM').toUpperCase()
 }
 
-function ContinuumAvatar() {
+function msgTime(dateStr: string | null): string {
+  if (!dateStr) return ''
+  return format(new Date(dateStr), 'HH:mm')
+}
+
+function groupByDay(messages: MessageRow[]): Array<{ day: string; msgs: MessageRow[] }> {
+  const map = new Map<string, MessageRow[]>()
+  for (const m of messages) {
+    const key = m.created_at ? format(new Date(m.created_at), 'yyyy-MM-dd') : 'unknown'
+    if (!map.has(key)) map.set(key, [])
+    map.get(key)!.push(m)
+  }
+  return Array.from(map.entries()).map(([key, msgs]) => ({
+    day: key === 'unknown' ? '—' : dayLabel(key + 'T12:00:00'),
+    msgs,
+  }))
+}
+
+function isHandoff(body: string): boolean {
+  return body.startsWith('—') && body.includes('Navigator')
+}
+
+function pickAutoReply(body: string): string {
+  const s = body.toLowerCase()
+  if (s.includes('book') || s.includes('test') || s.includes('collect') || s.includes('schedule'))
+    return 'Great! I can schedule the home collection for your HbA1c test 🏠 Would morning (7–9am) or afternoon (2–4pm) suit you better?'
+  if (s.includes('call') || s.includes('phone') || s.includes('ring'))
+    return "Of course — I'll arrange a callback for you. Priya will ring on your registered number shortly."
+  if (s.includes('?') || s.includes('question') || s.includes('how') || s.includes('what') || s.includes('when') || s.includes('why'))
+    return 'Of course, ask away! Happy to help 🙏'
+  return "Got it — Priya from your care team will follow up with you shortly. 🙏"
+}
+
+// ── Shared style ──────────────────────────────────────────────────────────────
+
+const CHIP_STYLE: CSSProperties = {
+  fontFamily: 'inherit',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 6,
+  background: '#fff',
+  color: '#0B6F64',
+  border: '1.5px solid #BFDCD7',
+  borderRadius: 999,
+  padding: '8px 14px',
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+}
+
+// ── Avatars ───────────────────────────────────────────────────────────────────
+
+function ContinuumRing({ size }: { size: number }) {
   return (
-    <div
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 99,
-        background: '#EDF4F3',
-        border: '1.5px solid #0E8C7F',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <span style={{ fontSize: 10, fontWeight: 800, color: '#0E8C7F' }}>C</span>
+    <div style={{
+      width: size, height: size, borderRadius: 99,
+      background: '#EDF4F3',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+    }}>
+      <svg width={size * 0.82} height={size * 0.82} viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="16" stroke="#CFE6E1" strokeWidth="6" />
+        <circle cx="22" cy="22" r="16" stroke="#0E8C7F" strokeWidth="6"
+          strokeLinecap="round" strokeDasharray="75 101"
+          transform="rotate(-90 22 22)" />
+      </svg>
     </div>
   )
 }
 
 function NavigatorAvatar() {
   return (
-    <div
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 99,
-        background: '#13233A',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-      }}
-    >
-      <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>P</span>
-    </div>
+    <div style={{
+      width: 28, height: 28, borderRadius: 99,
+      background: '#13233A', color: '#fff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0, fontSize: 11, fontWeight: 700,
+    }}>P</div>
   )
 }
 
-function MessageBubble({ msg, prevSender }: { msg: MessageRow; prevSender: string | null }) {
-  if (isHandoffChip(msg)) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 7,
-            padding: '6px 14px',
-            borderRadius: 99,
-            background: '#EEF1F5',
-            color: '#5A6B80',
-            fontSize: 12,
-            fontWeight: 500,
-          }}
-        >
-          <Loader size={12} strokeWidth={1.75} />
-          {msg.body.replace(/^—\s*/, '').replace(/\s*—$/, '')}
-        </span>
-      </div>
-    )
-  }
+// ── Bubble components ─────────────────────────────────────────────────────────
 
-  if (msg.sender === 'member') {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingLeft: 48 }}>
-        <div style={{ maxWidth: '80%' }}>
-          <div
-            style={{
-              background: '#E6F4EC',
-              borderRadius: '16px 16px 4px 16px',
-              padding: '10px 14px',
-              fontSize: 14,
-              color: '#13233A',
-              lineHeight: 1.55,
-            }}
-          >
-            {msg.body}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 4, marginTop: 3 }}>
-            <span style={{ fontSize: 11, color: '#8794A5' }}>
-              {format(new Date(msg.created_at ?? Date.now()), 'h:mm a')}
-            </span>
-            <CheckCheck size={14} strokeWidth={1.75} color="#0E8C7F" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const isNav = msg.sender === 'navigator'
-  const showAvatar = prevSender !== msg.sender
-
+function SystemBubble({ msg }: { msg: MessageRow }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, paddingRight: 48 }}>
-      <div style={{ width: 28, flexShrink: 0 }}>
-        {showAvatar && (isNav ? <NavigatorAvatar /> : <ContinuumAvatar />)}
+    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', maxWidth: '88%' }}>
+      <div style={{ marginBottom: 2 }}>
+        <ContinuumRing size={28} />
       </div>
-      <div style={{ maxWidth: '80%' }}>
-        {showAvatar && isNav && (
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-            <span style={{ fontSize: 12.5, fontWeight: 700, color: '#0E8C7F' }}>Priya</span>
-            <span style={{ fontSize: 11.5, color: '#8794A5' }}>Care Navigator</span>
-          </div>
-        )}
-        <div
-          style={{
-            background: '#fff',
-            borderRadius: '16px 16px 16px 4px',
-            padding: '10px 14px',
-            fontSize: 14,
-            color: '#13233A',
-            lineHeight: 1.55,
-            boxShadow: '0 1px 2px rgba(19,35,58,.06)',
-          }}
-        >
-          {msg.body}
-        </div>
-        <div style={{ marginTop: 3 }}>
-          <span style={{ fontSize: 11, color: '#8794A5' }}>
-            {format(new Date(msg.created_at ?? Date.now()), 'h:mm a')}
-          </span>
+      <div style={{
+        background: '#fff', borderRadius: '16px 16px 16px 4px',
+        padding: '12px 14px', boxShadow: '0 1px 1px rgba(19,35,58,.07)',
+      }}>
+        <div style={{ fontSize: 14, color: '#13233A', lineHeight: 1.55 }}>{msg.body}</div>
+        <div style={{ fontSize: 10.5, color: '#A2AAB4', textAlign: 'right', marginTop: 5 }}>
+          {msgTime(msg.created_at)}
         </div>
       </div>
     </div>
   )
 }
+
+function MemberBubble({ msg }: { msg: MessageRow }) {
+  return (
+    <div style={{ alignSelf: 'flex-end', maxWidth: '80%' }}>
+      <div style={{
+        background: '#E6F4EC', borderRadius: '16px 16px 4px 16px',
+        padding: '12px 14px', boxShadow: '0 1px 1px rgba(19,35,58,.07)',
+      }}>
+        <div style={{ fontSize: 14, color: '#16331F', lineHeight: 1.55 }}>{msg.body}</div>
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'flex-end', gap: 4, marginTop: 5,
+        }}>
+          <span style={{ fontSize: 10.5, color: '#6FA585' }}>{msgTime(msg.created_at)}</span>
+          <CheckCheck size={15} color="#0E8C7F" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function NavigatorBubble({ msg }: { msg: MessageRow }) {
+  const name = msg.sender === 'clinician' ? 'Dr. Mehra' : 'Priya'
+  const role = msg.sender === 'clinician' ? 'Clinician' : 'Care Navigator'
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', maxWidth: '88%' }}>
+      <div style={{ marginBottom: 2 }}>
+        <NavigatorAvatar />
+      </div>
+      <div style={{
+        background: '#fff', borderRadius: '16px 16px 16px 4px',
+        padding: '12px 14px', boxShadow: '0 1px 1px rgba(19,35,58,.07)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: '#0B6F64' }}>{name}</span>
+          <span style={{ fontSize: 11, color: '#8794A5' }}>{role}</span>
+        </div>
+        <div style={{ fontSize: 14, color: '#13233A', lineHeight: 1.55 }}>{msg.body}</div>
+        <div style={{ fontSize: 10.5, color: '#A2AAB4', textAlign: 'right', marginTop: 5 }}>
+          {msgTime(msg.created_at)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function HandoffPill({ msg }: { msg: MessageRow }) {
+  const label = msg.body.replace(/^—\s*/, '').replace(/\s*—$/, '')
+  return (
+    <div style={{ alignSelf: 'center' }}>
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 8,
+        padding: '7px 15px', borderRadius: 999,
+        background: '#EEF1F5', border: '1px solid #DEE4EC',
+      }}>
+        <Loader size={13} color="#64748B" />
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{label}</span>
+      </div>
+    </div>
+  )
+}
+
+function ContextualChips({ onSend }: { onSend: (text: string) => void }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, paddingLeft: 36, marginTop: 4, flexWrap: 'wrap' }}>
+      <button style={CHIP_STYLE} onClick={() => onSend("I'd like to book my test")}>
+        <CalendarCheck size={15} /> Book now
+      </button>
+      <button style={CHIP_STYLE} onClick={() => onSend('I have a question')}>
+        <HelpCircle size={15} /> I have a question
+      </button>
+    </div>
+  )
+}
+
+// ── MessageItem ───────────────────────────────────────────────────────────────
+
+interface MessageItemProps {
+  msg: MessageRow
+  showChips: boolean
+  onChipSend: (text: string) => void
+}
+
+function MessageItem({ msg, showChips, onChipSend }: MessageItemProps) {
+  if (isHandoff(msg.body)) return <HandoffPill msg={msg} />
+  if (msg.sender === 'member') return <MemberBubble msg={msg} />
+
+  const chips = showChips ? <ContextualChips onSend={onChipSend} /> : null
+
+  if (msg.sender === 'navigator' || msg.sender === 'clinician') {
+    return (
+      <Fragment>
+        <NavigatorBubble msg={msg} />
+        {chips}
+      </Fragment>
+    )
+  }
+
+  // system
+  return (
+    <Fragment>
+      <SystemBubble msg={msg} />
+      {chips}
+    </Fragment>
+  )
+}
+
+// ── Main screen ───────────────────────────────────────────────────────────────
 
 export function ChatScreen() {
   const { profile } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const [draft, setDraft] = useState('')
+  const threadRef = useRef<HTMLDivElement>(null)
+  const [inputValue, setInputValue] = useState('')
 
   const { data: member } = useQuery({
-    queryKey: ['member', profile?.id],
+    queryKey: ['member:byProfile', profile?.id],
     queryFn: () => getMemberByProfileId(profile!.id),
-    enabled: !!profile,
+    enabled: !!profile?.id,
+    staleTime: Infinity,
   })
-
   const memberId = member?.id
 
   const { data: messages = [] } = useQuery({
     queryKey: ['messages', memberId],
     queryFn: () => listMessages(memberId!),
     enabled: !!memberId,
-    refetchInterval: 30_000,
   })
 
+  // Live updates via Supabase Realtime
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (!memberId) return
+    const channel = supabase
+      .channel(`chat:${memberId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `member_id=eq.${memberId}` },
+        () => { queryClient.invalidateQueries({ queryKey: ['messages', memberId] }) },
+      )
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [memberId, queryClient])
+
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
+    if (threadRef.current) {
+      threadRef.current.scrollTop = threadRef.current.scrollHeight
+    }
   }, [messages.length])
 
-  async function handleSend(text?: string) {
-    const body = (text ?? draft).trim()
-    if (!body || !memberId) return
-    setDraft('')
-    const msg = await insertMessage({
-      member_id: memberId,
-      sender: 'member',
-      channel: 'app',
-      body,
-    })
-    if (msg) {
-      queryClient.setQueryData<MessageRow[]>(['messages', memberId], (old) => [
-        ...(old ?? []),
-        msg,
-      ])
-    }
+  const sendMessage = async (body: string) => {
+    const trimmed = body.trim()
+    if (!memberId || !trimmed) return
+    setInputValue('')
+
+    await insertMessage({ member_id: memberId, sender: 'member', channel: 'app', body: trimmed })
+    queryClient.invalidateQueries({ queryKey: ['messages', memberId] })
+
+    setTimeout(async () => {
+      const reply = pickAutoReply(trimmed)
+      await insertMessage({ member_id: memberId, sender: 'navigator', channel: 'app', body: reply })
+      queryClient.invalidateQueries({ queryKey: ['messages', memberId] })
+    }, 1500)
   }
 
+  const grouped = groupByDay(messages)
+  const lastMsg = messages[messages.length - 1]
+  const showChips = !!lastMsg && ['system', 'navigator', 'clinician'].includes(lastMsg.sender)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F7F6F3' }}>
+    <div style={{
+      height: 'calc(100svh - 4.5rem)',
+      display: 'flex', flexDirection: 'column', minHeight: 0,
+    }}>
+
       {/* Header */}
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          background: '#fff',
-          borderBottom: '1px solid #ECEAE5',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <button
-          onClick={() => navigate({ to: '/patient' })}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#13233A', padding: 4, display: 'flex' }}
-        >
-          <ChevronLeft size={22} strokeWidth={1.75} />
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '10px 14px 12px',
+        background: '#fff', borderBottom: '1px solid #ECEAE5', flexShrink: 0,
+      }}>
+        <button onClick={() => void navigate({ to: '/patient' })} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', marginRight: 2 }}>
+          <ChevronLeft size={24} color="#13233A" />
         </button>
-        <div
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 99,
-            background: '#EDF4F3',
-            border: '2px solid #0E8C7F',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}
-        >
-          <span style={{ fontSize: 13, fontWeight: 800, color: '#0E8C7F' }}>C</span>
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              right: 0,
-              width: 9,
-              height: 9,
-              borderRadius: 99,
-              background: '#22C55E',
-              border: '2px solid #fff',
-            }}
-          />
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <ContinuumRing size={42} />
+          <span style={{
+            position: 'absolute', right: 1, bottom: 1,
+            width: 11, height: 11, borderRadius: 99,
+            background: '#1F9D55', border: '2px solid #fff',
+          }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#13233A', letterSpacing: '-0.01em' }}>
+          <div style={{ fontSize: 15.5, fontWeight: 600, letterSpacing: '-0.01em', color: '#13233A' }}>
             Continuum Care Team
           </div>
-          <div style={{ fontSize: 12, color: '#22C55E', fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: '#1F9D55', fontWeight: 500, marginTop: 1 }}>
             Online · typically replies in minutes
           </div>
         </div>
-        <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#3A4A5E', padding: 4, display: 'flex' }}>
-          <Phone size={19} strokeWidth={1.75} />
+        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
+          <Phone size={20} color="#0E8C7F" />
         </button>
-        <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#3A4A5E', padding: 4, display: 'flex' }}>
-          <MoreVertical size={19} strokeWidth={1.75} />
+        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
+          <MoreVertical size={20} color="#8794A5" />
         </button>
       </div>
 
       {/* Demo banner */}
-      <div
-        style={{
-          background: '#FBEFDD',
-          borderBottom: '1px solid #F0D9B5',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 10,
-          fontSize: 12.5,
-          color: '#A6620F',
-          fontWeight: 500,
-          lineHeight: 1.45,
-        }}
-      >
-        <Info size={15} strokeWidth={1.75} style={{ flexShrink: 0, marginTop: 1 }} />
-        Simulated in-app chat for the prototype. Real product would connect via WhatsApp or SMS.
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+        padding: '7px 16px', background: '#FBEFDD', flexShrink: 0,
+      }}>
+        <Info size={13} color="#A6620F" />
+        <span style={{ fontSize: 11.5, color: '#A6620F', fontWeight: 500 }}>
+          Simulated WhatsApp experience for the prototype
+        </span>
       </div>
 
       {/* Thread */}
       <div
+        ref={threadRef}
         style={{
-          flex: 1,
-          background: '#EAE8E2',
-          padding: '18px 14px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
+          flex: 1, overflowY: 'auto', minHeight: 0,
+          background: '#EAE8E2', padding: '18px 14px',
+          display: 'flex', flexDirection: 'column', gap: 12,
         }}
       >
-        {messages.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#8794A5', fontSize: 13.5, padding: '40px 20px' }}>
-            Your care team will reach out soon.
+        {grouped.map(({ day, msgs }) => (
+          <Fragment key={day}>
+            <div style={{
+              alignSelf: 'center', padding: '4px 13px', borderRadius: 999,
+              background: 'rgba(255,255,255,.72)', fontSize: 11, fontWeight: 600,
+              color: '#8794A5', marginBottom: 2,
+            }}>
+              {day}
+            </div>
+            {msgs.map((msg) => {
+              const isLast = msg === messages[messages.length - 1]
+              return (
+                <MessageItem
+                  key={msg.id}
+                  msg={msg}
+                  showChips={isLast && showChips}
+                  onChipSend={sendMessage}
+                />
+              )
+            })}
+          </Fragment>
+        ))}
+
+        {!memberId && (
+          <div style={{ alignSelf: 'center', fontSize: 13, color: '#A2AAB4', marginTop: 48 }}>
+            Loading conversation…
           </div>
         )}
-        {messages.map((msg, i) => (
-          <MessageBubble
-            key={msg.id}
-            msg={msg}
-            prevSender={i > 0 ? messages[i - 1].sender : null}
-          />
+      </div>
+
+      {/* Persistent quick-reply bar */}
+      <div style={{
+        display: 'flex', gap: 8, padding: '9px 14px 8px',
+        background: '#F7F6F3', overflowX: 'auto',
+        borderTop: '1px solid #ECEAE5', flexShrink: 0,
+      }}>
+        {[
+          { label: '📞 Call me',  body: 'Can I get a call back?' },
+          { label: 'Prefer chat', body: "I'd prefer to continue on chat." },
+          { label: 'Book test',   body: "I'd like to book my test." },
+        ].map(({ label, body }) => (
+          <button key={label} style={{ ...CHIP_STYLE, fontSize: 12.5, padding: '7px 13px' }}
+            onClick={() => void sendMessage(body)}>
+            {label}
+          </button>
         ))}
-        <div ref={bottomRef} />
       </div>
 
-      {/* Quick replies + input */}
-      <div
-        style={{
-          position: 'sticky',
-          bottom: '4.25rem',
-          zIndex: 10,
-          background: '#F7F6F3',
-          borderTop: '1px solid #ECEAE5',
-        }}
-      >
-        {/* Quick reply chips */}
-        <div
+      {/* Input bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '7px 14px 20px', background: '#F7F6F3', flexShrink: 0,
+      }}>
+        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}>
+          <Plus size={24} color="#8794A5" />
+        </button>
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+          background: '#fff', border: '1px solid #E4E2DD',
+          borderRadius: 999, padding: '10px 16px',
+        }}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                void sendMessage(inputValue)
+              }
+            }}
+            placeholder="Message your care team…"
+            style={{
+              flex: 1, border: 'none', outline: 'none',
+              fontSize: 14, color: '#13233A',
+              background: 'transparent', fontFamily: 'inherit',
+            }}
+          />
+          <Smile size={18} color="#C0C8D2" />
+        </div>
+        <button
+          onClick={() => void sendMessage(inputValue)}
+          disabled={!inputValue.trim()}
           style={{
-            display: 'flex',
-            gap: 8,
-            padding: '12px 14px 8px',
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
+            width: 44, height: 44, borderRadius: 99, border: 'none', flexShrink: 0,
+            background: inputValue.trim() ? '#0E8C7F' : '#E4E2DD',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: inputValue.trim() ? 'pointer' : 'default',
+            boxShadow: inputValue.trim() ? '0 2px 6px rgba(14,140,127,.30)' : 'none',
+            transition: 'background 0.15s, box-shadow 0.15s',
           }}
         >
-          {QUICK_REPLIES.map((qr) => (
-            <button
-              key={qr}
-              onClick={() => handleSend(qr)}
-              style={{
-                padding: '7px 14px',
-                borderRadius: 99,
-                border: '1.5px solid #D9D7D2',
-                background: '#fff',
-                color: '#3A4A5E',
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-              }}
-            >
-              {qr}
-            </button>
-          ))}
-        </div>
-
-        {/* Input row */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '6px 14px 10px',
-          }}
-        >
-          <button style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#8794A5', padding: 4, display: 'flex' }}>
-            <Plus size={22} strokeWidth={1.75} />
-          </button>
-          <div
-            style={{
-              flex: 1,
-              background: '#fff',
-              border: '1.5px solid #DDDBD6',
-              borderRadius: 22,
-              display: 'flex',
-              alignItems: 'center',
-              padding: '0 14px',
-              gap: 8,
-            }}
-          >
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
-              placeholder="Type a message…"
-              style={{
-                flex: 1,
-                border: 'none',
-                background: 'transparent',
-                outline: 'none',
-                fontSize: 14,
-                color: '#13233A',
-                padding: '10px 0',
-              }}
-            />
-          </div>
-          <button
-            onClick={() => handleSend()}
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 99,
-              background: draft.trim() ? '#0E8C7F' : '#D9D7D2',
-              border: 'none',
-              cursor: draft.trim() ? 'pointer' : 'default',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              transition: 'background 0.15s',
-            }}
-          >
-            <Send size={17} strokeWidth={1.75} color="#fff" />
-          </button>
-        </div>
+          <Send size={18} color={inputValue.trim() ? '#fff' : '#A2AAB4'} />
+        </button>
       </div>
+
     </div>
   )
 }

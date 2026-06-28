@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, ChevronRight, User, Languages, Pencil, Paperclip, Tag, Phone, MessageCircle, Calendar, CheckCheck, Flag, Sparkles } from 'lucide-react'
+import { ArrowLeft, ChevronRight, User, Languages, Building2, Pencil, Paperclip, Tag, Phone, MessageCircle, Calendar, CheckCheck, Flag, Sparkles } from 'lucide-react'
 import { getMember, type MemberRow } from '@/lib/api/members'
 import { getActivePlanForMember, type ActivePlanResult } from '@/lib/api/care-plans'
 import { listNudgesForMember, type NudgeRow } from '@/lib/api/nudges'
 import { listNavigatorTasks, updateTaskStatus, type NavigatorTaskWithMember } from '@/lib/api/navigator-tasks'
+import { getOrg, type OrgRow } from '@/lib/api/organizations'
+import { getSimDay } from '@/lib/api/sim-state'
 import type { Json, Enums } from '@/lib/database.types'
 import { RiskGauge } from './RiskGauge'
 import { CarePlanTimeline } from './CarePlanTimeline'
@@ -89,6 +91,19 @@ function initials(name: string): string {
   return name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 }
 
+function calcAge(dob: string | null, today: Date): number | null {
+  if (!dob) return null
+  const birth = new Date(dob)
+  let age = today.getFullYear() - birth.getFullYear()
+  const m = today.getMonth() - birth.getMonth()
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+  return age
+}
+
+function orgAbbr(name: string): string {
+  return name.replace(/\s+/g, '').slice(0, 3).toUpperCase()
+}
+
 // ── Main component ──────────────────────────────────────────────────────────
 
 export function MemberDetailPage({ memberId }: { memberId: string }) {
@@ -100,19 +115,27 @@ export function MemberDetailPage({ memberId }: { memberId: string }) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [org, setOrg] = useState<OrgRow | null>(null)
+  const [simDay, setSimDay] = useState<Date>(new Date())
 
   useEffect(() => {
     async function load() {
-      const [m, p, n, tasks] = await Promise.all([
+      const [m, p, n, tasks, day] = await Promise.all([
         getMember(memberId),
         getActivePlanForMember(memberId),
         listNudgesForMember(memberId),
         listNavigatorTasks({ member_id: memberId, status: 'open' }),
+        getSimDay(),
       ])
+      setSimDay(day)
       setMember(m)
       setPlan(p)
       setNudges(n)
       setTask(tasks[0] ?? null)
+      if (m?.org_id) {
+        const o = await getOrg(m.org_id)
+        setOrg(o)
+      }
       setLoading(false)
     }
     load()
@@ -207,8 +230,17 @@ export function MemberDetailPage({ memberId }: { memberId: string }) {
                 {(member.dob || member.gender) && (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <User size={15} strokeWidth={1.75} style={{ color: '#A2AAB4' }} />
-                    {member.gender ?? ''}
+                    {[calcAge(member.dob, simDay), member.gender].filter(Boolean).join(' · ')}
                   </span>
+                )}
+                {org?.name && (
+                  <>
+                    <span style={{ width: '3px', height: '3px', borderRadius: '99px', background: '#C2CAD3' }} />
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <Building2 size={15} strokeWidth={1.75} style={{ color: '#A2AAB4' }} />
+                      {org.name}
+                    </span>
+                  </>
                 )}
                 {member.preferred_language && (
                   <>
@@ -230,7 +262,7 @@ export function MemberDetailPage({ memberId }: { memberId: string }) {
           </div>
 
           <div style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#8794A5', lineHeight: 1.7 }}>
-            <div>MEMBER #{member.id.slice(0, 8).toUpperCase()}</div>
+            <div>MEMBER #{org ? `${orgAbbr(org.name)}-${member.id.replace(/-/g, '').slice(-5).toUpperCase()}` : member.id.slice(0, 8).toUpperCase()}</div>
             {member.created_at && (
               <div>ENROLLED {new Date(member.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase()}</div>
             )}
@@ -310,6 +342,7 @@ export function MemberDetailPage({ memberId }: { memberId: string }) {
             actions={plan.actions}
             providerName={plan.providerName}
             consultAt={plan.consultation?.consulted_at ?? null}
+            simDay={simDay}
           />
         ) : (
           <div style={{ background: '#fff', border: '1px solid #ECEAE5', borderRadius: '16px', padding: '24px 26px', boxShadow: '0 1px 2px rgba(19,35,58,.04)' }}>

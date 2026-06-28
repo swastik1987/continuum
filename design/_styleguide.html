@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#F7F6F3;}
+  ::selection{background:#0E8C7F;color:#fff;}
+</style>
+</helmet>
+
+<div style="background:#F7F6F3;min-height:100vh;font-family:'Inter',system-ui,sans-serif;color:#13233A;-webkit-font-smoothing:antialiased;padding:56px 48px 96px;">
+<div style="max-width:1180px;margin:0 auto;">
+
+  <!-- ============ HEADER ============ -->
+  <header style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:40px;border-bottom:1px solid #E7E5E0;">
+    <div style="display:flex;align-items:center;gap:18px;">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="display:block;">
+        <circle cx="22" cy="22" r="17" stroke="#E2EFEC" stroke-width="5"/>
+        <circle cx="22" cy="22" r="17" stroke="#0E8C7F" stroke-width="5" stroke-linecap="round" stroke-dasharray="80 107" transform="rotate(-90 22 22)"/>
+      </svg>
+      <div>
+        <div style="font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1;">Continuum</div>
+        <div style="font-size:14px;color:#5A6B80;margin-top:7px;letter-spacing:-0.005em;">Care-continuity platform — design foundation</div>
+      </div>
+    </div>
+    <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;line-height:1.7;letter-spacing:0.02em;">
+      <div>v1.0 · STYLEGUIDE</div>
+      <div>LIGHT MODE · 8PX GRID</div>
+    </div>
+  </header>
+
+  <!-- ============ COLOR — CORE ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">01 — Color</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 4px;">Core palette</h2>
+    <p style="font-size:15px;color:#5A6B80;margin:0 0 28px;max-width:560px;">Calm healing teal for action and progress. Deep slate-navy ink. Warm off-white surface with clean white cards.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <!-- Primary -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);">
+        <div style="height:104px;background:#0E8C7F;display:flex;align-items:flex-end;padding:14px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.85);">#0E8C7F</span>
+        </div>
+        <div style="padding:14px 16px 16px;">
+          <div style="font-size:14px;font-weight:600;">Primary · Teal</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:3px;">Actions, active, progress</div>
+        </div>
+      </div>
+      <!-- Ink -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);">
+        <div style="height:104px;background:#13233A;display:flex;align-items:flex-end;padding:14px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.8);">#13233A</span>
+        </div>
+        <div style="padding:14px 16px 16px;">
+          <div style="font-size:14px;font-weight:600;">Ink · Slate-navy</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:3px;">Primary text</div>
+        </div>
+      </div>
+      <!-- Surface -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);">
+        <div style="height:104px;background:#F7F6F3;border-bottom:1px solid #E7E5E0;display:flex;align-items:flex-end;padding:14px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;">#F7F6F3</span>
+        </div>
+        <div style="padding:14px 16px 16px;">
+          <div style="font-size:14px;font-weight:600;">Surface</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:3px;">App background</div>
+        </div>
+      </div>
+      <!-- White -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);">
+        <div style="height:104px;background:#FFFFFF;border-bottom:1px solid #E7E5E0;display:flex;align-items:flex-end;padding:14px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;">#FFFFFF</span>
+        </div>
+        <div style="padding:14px 16px 16px;">
+          <div style="font-size:14px;font-weight:600;">Card</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:3px;">Elevated containers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COLOR — STATUS ============ -->
+  <section style="margin-top:48px;">
+    <h3 style="font-size:15px;font-weight:600;margin:0 0 4px;">Status semantics</h3>
+    <p style="font-size:14px;color:#5A6B80;margin:0 0 22px;">Used consistently across patient and staff surfaces. Each pairs a solid signal color with a soft tint for backgrounds and badges.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <div style="flex:1;height:52px;border-radius:10px;background:#1F9D55;"></div>
+          <div style="flex:1;height:52px;border-radius:10px;background:#E6F4EC;border:1px solid #D2EBDC;"></div>
+        </div>
+        <div style="font-size:14px;font-weight:600;">Done · On-track</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;margin-top:4px;">#1F9D55 · #E6F4EC</div>
+        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:4px 10px;border-radius:999px;background:#E6F4EC;color:#167A41;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Completed</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <div style="flex:1;height:52px;border-radius:10px;background:#64748B;"></div>
+          <div style="flex:1;height:52px;border-radius:10px;background:#EEF1F5;border:1px solid #DEE4EC;"></div>
+        </div>
+        <div style="font-size:14px;font-weight:600;">Due soon · Pending</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;margin-top:4px;">#64748B · #EEF1F5</div>
+        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:4px 10px;border-radius:999px;background:#EEF1F5;color:#475569;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#64748B;"></span>Due soon</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <div style="flex:1;height:52px;border-radius:10px;background:#D9821B;"></div>
+          <div style="flex:1;height:52px;border-radius:10px;background:#FBEFDD;border:1px solid #F0DDBE;"></div>
+        </div>
+        <div style="font-size:14px;font-weight:600;">Overdue · Attention</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;margin-top:4px;">#D9821B · #FBEFDD</div>
+        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:4px 10px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Overdue</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <div style="flex:1;height:52px;border-radius:10px;background:#D24B47;"></div>
+          <div style="flex:1;height:52px;border-radius:10px;background:#FAE8E7;border:1px solid #F1CFCD;"></div>
+        </div>
+        <div style="font-size:14px;font-weight:600;">Declined · Urgent</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;margin-top:4px;">#D24B47 · #FAE8E7</div>
+        <div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:4px 10px;border-radius:999px;background:#FAE8E7;color:#A8332F;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D24B47;"></span>High-risk</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TYPOGRAPHY ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">02 — Typography</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 4px;">Inter — humanist sans</h2>
+    <p style="font-size:15px;color:#5A6B80;margin:0 0 28px;max-width:560px;">One family across patient and staff. Tight tracking on large sizes, generous line-height on body, tabular numerals for all dashboard figures.</p>
+
+    <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);overflow:hidden;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:24px 28px;border-bottom:1px solid #F0EEEA;">
+        <div style="font-size:46px;font-weight:600;letter-spacing:-0.03em;line-height:1;">Stay on your path</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;text-align:right;white-space:nowrap;">Display · 46/700 · -3%</div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:20px 28px;border-bottom:1px solid #F0EEEA;">
+        <div style="font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1.1;">Your follow-up care</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;text-align:right;white-space:nowrap;">H1 · 30/600 · -2%</div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:18px 28px;border-bottom:1px solid #F0EEEA;">
+        <div style="font-size:20px;font-weight:600;letter-spacing:-0.01em;line-height:1.2;">Recommended next steps</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;text-align:right;white-space:nowrap;">H2 · 20/600 · -1%</div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:18px 28px;border-bottom:1px solid #F0EEEA;">
+        <div style="font-size:15px;font-weight:400;line-height:1.55;color:#3A4A5E;max-width:560px;">Body — Complete the labs and consults your care team recommended. We'll remind you gently and flag anything that needs attention.</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;text-align:right;white-space:nowrap;">Body · 15/400 · 1.55</div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:18px 28px;">
+        <div style="font-size:12.5px;font-weight:500;letter-spacing:0.01em;color:#8794A5;text-transform:uppercase;">Last updated 2 hours ago</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;text-align:right;white-space:nowrap;">Caption · 12.5/500</div>
+      </div>
+    </div>
+
+    <!-- tabular numerals -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#0E8C7F;margin-bottom:14px;">Tabular numerals</div>
+        <div style="font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;letter-spacing:-0.01em;line-height:1.35;">
+          <div>1,284 patients</div>
+          <div>91.0% completion</div>
+          <div>$ 1,109.50 saved</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#8794A5;margin-bottom:14px;">Proportional (avoid in tables)</div>
+        <div style="font-variant-numeric:proportional-nums;font-size:30px;font-weight:600;letter-spacing:-0.01em;line-height:1.35;color:#8794A5;">
+          <div>1,284 patients</div>
+          <div>91.0% completion</div>
+          <div>$ 1,109.50 saved</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BUTTONS ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">03 — Buttons</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 28px;">Actions</h2>
+
+    <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:28px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.14);display:grid;grid-template-columns:repeat(3,1fr);gap:32px;">
+      <!-- primary -->
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Primary</div>
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:8px;background:#0E8C7F;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);transition:background .15s;" style-hover="background:#0B6F64;"><i data-lucide="check" style="width:17px;height:17px;"></i>Confirm follow-up</button>
+          <button style="font-family:inherit;background:#0B6F64;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;">Hover / pressed</button>
+          <button disabled style="font-family:inherit;background:#CFE3DF;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:not-allowed;">Disabled</button>
+        </div>
+      </div>
+      <!-- secondary -->
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Secondary</div>
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;" style-hover="background:#F2F8F7;"><i data-lucide="calendar" style="width:17px;height:17px;"></i>Reschedule</button>
+          <button style="font-family:inherit;background:#F2F8F7;color:#0B6F64;border:1px solid #BFDCD7;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;">Hover</button>
+          <button disabled style="font-family:inherit;background:#fff;color:#C2CAD3;border:1px solid #E7E5E0;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:not-allowed;">Disabled</button>
+        </div>
+      </div>
+      <!-- ghost -->
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;">Ghost</div>
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:8px;background:transparent;color:#0B6F64;border:none;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;" style-hover="background:#EDF4F3;">View details<i data-lucide="chevron-right" style="width:17px;height:17px;"></i></button>
+          <button style="font-family:inherit;background:#EDF4F3;color:#0B6F64;border:none;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;cursor:pointer;">Hover</button>
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:8px;background:transparent;color:#D24B47;border:none;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;" style-hover="background:#FAE8E7;">Decline</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BADGES + PROVENANCE + SEGMENTS ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">04 — Badges &amp; chips</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 28px;">Signals</h2>
+
+    <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:16px;">
+      <!-- status badges -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Status badges</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#E6F4EC;color:#167A41;font-size:13px;font-weight:600;"><span style="width:7px;height:7px;border-radius:99px;background:#1F9D55;"></span>On-track</span>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#EEF1F5;color:#475569;font-size:13px;font-weight:600;"><span style="width:7px;height:7px;border-radius:99px;background:#64748B;"></span>Due soon</span>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:13px;font-weight:600;"><span style="width:7px;height:7px;border-radius:99px;background:#D9821B;"></span>Overdue</span>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#FAE8E7;color:#A8332F;font-size:13px;font-weight:600;"><span style="width:7px;height:7px;border-radius:99px;background:#D24B47;"></span>Declined</span>
+        </div>
+        <div style="font-size:13px;font-weight:600;margin:24px 0 14px;">Provenance</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 10px;border-radius:8px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:12.5px;font-weight:600;"><i data-lucide="shield-check" style="width:15px;height:15px;"></i>Clinician-authored</span>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 10px;border-radius:8px;background:#F4F2EE;border:1px solid #E4E1DA;color:#6B6256;font-size:12.5px;font-weight:600;"><i data-lucide="sparkles" style="width:15px;height:15px;"></i>AI-suggested</span>
+        </div>
+      </div>
+
+      <!-- segment chips -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Behaviour segments</div>
+        <div style="font-size:12.5px;color:#8794A5;margin-bottom:16px;">Why patients drop off — colour-coded for triage.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:9px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#E6F4EC;color:#167A41;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Feels better</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#FBEFDD;color:#A6620F;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Cost barrier</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#FAE8E7;color:#A8332F;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#D24B47;"></span>Side effects</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#EEF1F5;color:#475569;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#64748B;"></span>Needs reminder</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#EDF4F3;color:#0B6F64;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#0E8C7F;"></span>Re-engaged</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#EEF1F5;color:#475569;font-size:12.5px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#64748B;"></span>Transport</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARDS + PROGRESS RING ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">05 — Cards &amp; progress</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 28px;">Containers</h2>
+
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start;">
+      <!-- sample care card -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 14px 36px -18px rgba(19,35,58,.18);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div style="display:flex;gap:14px;align-items:center;">
+            <div style="width:44px;height:44px;border-radius:12px;background:#EDF4F3;display:flex;align-items:center;justify-content:center;color:#0E8C7F;"><i data-lucide="flask-conical" style="width:22px;height:22px;"></i></div>
+            <div>
+              <div style="font-size:16px;font-weight:600;letter-spacing:-0.01em;">Lipid panel — fasting</div>
+              <div style="font-size:13px;color:#8794A5;margin-top:2px;">Quest Diagnostics · ordered Jun 12</div>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Overdue 3d</span>
+        </div>
+        <div style="margin-top:18px;padding-top:18px;border-top:1px solid #F0EEEA;display:flex;align-items:center;justify-content:space-between;">
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:8px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:12px;font-weight:600;"><i data-lucide="shield-check" style="width:14px;height:14px;"></i>Clinician-authored</span>
+          <div style="display:flex;gap:10px;">
+            <button style="font-family:inherit;background:transparent;color:#5A6B80;border:none;font-size:13.5px;font-weight:600;cursor:pointer;padding:9px 12px;border-radius:9px;">Snooze</button>
+            <button style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:#0E8C7F;color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:13.5px;font-weight:600;cursor:pointer;">Book now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- progress rings -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:20px;">Progress ring</div>
+        <div style="display:flex;justify-content:space-around;align-items:center;">
+
+          <div style="text-align:center;">
+            <svg width="92" height="92" viewBox="0 0 92 92">
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#0E8C7F" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="168.4" transform="rotate(-90 46 46)"/>
+              <text x="46" y="51" text-anchor="middle" font-family="Inter" font-size="20" font-weight="600" fill="#13233A" style="font-variant-numeric:tabular-nums;">33%</text>
+            </svg>
+            <div style="font-size:12px;color:#8794A5;margin-top:8px;">Started</div>
+          </div>
+
+          <div style="text-align:center;">
+            <svg width="92" height="92" viewBox="0 0 92 92">
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#0E8C7F" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="80.4" transform="rotate(-90 46 46)"/>
+              <text x="46" y="51" text-anchor="middle" font-family="Inter" font-size="20" font-weight="600" fill="#13233A" style="font-variant-numeric:tabular-nums;">68%</text>
+            </svg>
+            <div style="font-size:12px;color:#8794A5;margin-top:8px;">In progress</div>
+          </div>
+
+          <div style="text-align:center;">
+            <svg width="92" height="92" viewBox="0 0 92 92">
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+              <circle cx="46" cy="46" r="40" fill="none" stroke="#1F9D55" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="0" transform="rotate(-90 46 46)"/>
+              <text x="46" y="51" text-anchor="middle" font-family="Inter" font-size="20" font-weight="600" fill="#167A41" style="font-variant-numeric:tabular-nums;">100%</text>
+            </svg>
+            <div style="font-size:12px;color:#8794A5;margin-top:8px;">Complete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KPI TILES ============ -->
+  <section style="margin-top:48px;">
+    <h3 style="font-size:15px;font-weight:600;margin:0 0 16px;">Data tiles · KPI cards</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;align-items:center;gap:8px;color:#8794A5;font-size:12.5px;font-weight:500;"><i data-lucide="users" style="width:16px;height:16px;"></i>Active patients</div>
+        <div style="font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-top:12px;font-variant-numeric:tabular-nums;">1,284</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:#167A41;font-size:12.5px;font-weight:600;"><i data-lucide="trending-up" style="width:14px;height:14px;"></i>+4.2%</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;align-items:center;gap:8px;color:#8794A5;font-size:12.5px;font-weight:500;"><i data-lucide="circle-check-big" style="width:16px;height:16px;"></i>Completion rate</div>
+        <div style="font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-top:12px;font-variant-numeric:tabular-nums;">91.0%</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:#167A41;font-size:12.5px;font-weight:600;"><i data-lucide="trending-up" style="width:14px;height:14px;"></i>+1.8%</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;align-items:center;gap:8px;color:#8794A5;font-size:12.5px;font-weight:500;"><i data-lucide="alert-triangle" style="width:16px;height:16px;"></i>Needs attention</div>
+        <div style="font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-top:12px;font-variant-numeric:tabular-nums;color:#A6620F;">37</div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:#A8332F;font-size:12.5px;font-weight:600;"><i data-lucide="trending-up" style="width:14px;height:14px;"></i>+6 today</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="display:flex;align-items:center;gap:8px;color:#8794A5;font-size:12.5px;font-weight:500;"><i data-lucide="clock" style="width:16px;height:16px;"></i>Avg. time to close</div>
+        <div style="font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-top:12px;font-variant-numeric:tabular-nums;">6.4<span style="font-size:17px;color:#8794A5;font-weight:500;"> days</span></div>
+        <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:#167A41;font-size:12.5px;font-weight:600;"><i data-lucide="trending-down" style="width:14px;height:14px;"></i>-0.9d</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LIST ROWS ============ -->
+  <section style="margin-top:48px;">
+    <h3 style="font-size:15px;font-weight:600;margin:0 0 16px;">List rows · patient triage</h3>
+    <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(19,35,58,.04),0 10px 30px -16px rgba(19,35,58,.12);">
+
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid #F0EEEA;">
+        <div style="width:40px;height:40px;border-radius:99px;background:#E6F4EC;color:#167A41;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">MR</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14.5px;font-weight:600;">Maria Reyes</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">2nd cardiology consult · referred Jun 09</div>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#E6F4EC;color:#167A41;font-size:12px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Feels better</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:#E6F4EC;color:#167A41;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>On-track</span>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#B7BFC9;"></i>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid #F0EEEA;">
+        <div style="width:40px;height:40px;border-radius:99px;background:#FBEFDD;color:#A6620F;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">JT</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14.5px;font-weight:600;">James Thornton</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">HbA1c lab · ordered Jun 05</div>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Cost barrier</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Overdue 9d</span>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#B7BFC9;"></i>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;padding:16px 22px;">
+        <div style="width:40px;height:40px;border-radius:99px;background:#FAE8E7;color:#A8332F;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">DO</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14.5px;font-weight:600;">Dana Okafor</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">Statin refill · declined Jun 18</div>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:7px;background:#FAE8E7;color:#A8332F;font-size:12px;font-weight:500;"><span style="width:6px;height:6px;border-radius:99px;background:#D24B47;"></span>Side effects</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:#FAE8E7;color:#A8332F;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D24B47;"></span>High-risk</span>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#B7BFC9;"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INPUTS + TABS + AVATAR ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">06 — Forms &amp; navigation</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 28px;">Inputs, tabs &amp; identity</h2>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:start;">
+      <!-- inputs -->
+      <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:18px;">Input fields</div>
+
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:7px;">Full name</label>
+          <input type="text" value="Maria Reyes" readonly style="font-family:inherit;width:100%;font-size:14px;color:#13233A;background:#fff;border:1px solid #D9D6CF;border-radius:10px;padding:11px 13px;outline:none;"/>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:7px;">Date of appointment <span style="color:#0E8C7F;font-weight:500;font-size:12px;">· focused</span></label>
+          <div style="position:relative;">
+            <input type="text" value="Jun 28, 2026" readonly style="font-family:inherit;width:100%;font-size:14px;color:#13233A;background:#fff;border:1.5px solid #0E8C7F;border-radius:10px;padding:11px 13px;outline:none;box-shadow:0 0 0 3px rgba(14,140,127,.14);"/>
+          </div>
+          <div style="font-size:12px;color:#8794A5;margin-top:6px;">We'll send a reminder 24 hours before.</div>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:7px;">Insurance ID</label>
+          <input type="text" value="—" readonly style="font-family:inherit;width:100%;font-size:14px;color:#13233A;background:#fff;border:1.5px solid #D24B47;border-radius:10px;padding:11px 13px;outline:none;box-shadow:0 0 0 3px rgba(210,75,71,.12);"/>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#A8332F;margin-top:6px;font-weight:500;"><i data-lucide="alert-circle" style="width:14px;height:14px;"></i>This field is required to verify coverage.</div>
+        </div>
+      </div>
+
+      <!-- tabs + avatar -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+          <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Tabs</div>
+          <div style="display:inline-flex;background:#F1EFEB;border-radius:11px;padding:4px;gap:2px;">
+            <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="3">
+              <button onClick="{{ tab.onClick }}" style="{{ tab.style }}">{{ tab.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(19,35,58,.04);">
+          <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Avatar + name row</div>
+          <div style="display:flex;align-items:center;gap:13px;">
+            <div style="position:relative;">
+              <div style="width:46px;height:46px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;">EC</div>
+              <span style="position:absolute;right:-1px;bottom:-1px;width:13px;height:13px;border-radius:99px;background:#1F9D55;border:2.5px solid #fff;"></span>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:600;">Dr. Elena Cho</div>
+              <div style="font-size:12.5px;color:#8794A5;">Care coordinator · Cardiology</div>
+            </div>
+            <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#EDF4F3;color:#0B6F64;border:none;border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;"><i data-lucide="message-circle" style="width:15px;height:15px;"></i>Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ICONOGRAPHY ============ -->
+  <section style="margin-top:64px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span style="width:18px;height:1px;background:#0E8C7F;"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:#0E8C7F;">07 — Iconography</span>
+    </div>
+    <h2 style="font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 6px;">Line icons</h2>
+    <p style="font-size:15px;color:#5A6B80;margin:0 0 28px;max-width:560px;">Rounded line set, consistent 1.75px stroke. Calm and human — never filled, never decorative.</p>
+
+    <div style="background:#fff;border:1px solid #E7E5E0;border-radius:16px;padding:28px 24px;box-shadow:0 1px 2px rgba(19,35,58,.04);display:grid;grid-template-columns:repeat(8,1fr);gap:8px 4px;color:#13233A;">
+      <sc-for list="{{ icons }}" as="ic" hint-placeholder-count="16">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:9px;padding:14px 6px;border-radius:12px;">
+          <i data-lucide="{{ ic.n }}" style="width:23px;height:23px;color:#0E8C7F;"></i>
+          <span style="font-size:11px;color:#8794A5;text-align:center;">{{ ic.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer style="margin-top:64px;padding-top:28px;border-top:1px solid #E7E5E0;display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <svg width="22" height="22" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="17" stroke="#E2EFEC" stroke-width="5"/><circle cx="22" cy="22" r="17" stroke="#0E8C7F" stroke-width="5" stroke-linecap="round" stroke-dasharray="80 107" transform="rotate(-90 22 22)"/></svg>
+      <span style="font-size:13px;font-weight:600;color:#13233A;">Continuum</span>
+    </div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8794A5;">Design foundation · built on an 8px grid</span>
+  </footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 0 };
+
+  componentDidMount() { this.drawIcons(); }
+  componentDidUpdate() { this.drawIcons(); }
+  drawIcons() {
+    if (window.lucide) {
+      try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {}
+    } else {
+      setTimeout(() => this.drawIcons(), 120);
+    }
+  }
+
+  renderVals() {
+    const labels = ['All', 'Due soon', 'Overdue'];
+    const tabs = labels.map((label, i) => {
+      const active = this.state.tab === i;
+      return {
+        label,
+        onClick: () => this.setState({ tab: i }),
+        style: {
+          fontFamily: 'inherit',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '13.5px',
+          fontWeight: 600,
+          padding: '8px 16px',
+          borderRadius: '8px',
+          transition: 'all .15s',
+          background: active ? '#FFFFFF' : 'transparent',
+          color: active ? '#0B6F64' : '#5A6B80',
+          boxShadow: active ? '0 1px 2px rgba(19,35,58,.12)' : 'none'
+        }
+      };
+    });
+
+    const icons = [
+      { n: 'heart-pulse', label: 'Vitals' },
+      { n: 'flask-conical', label: 'Lab test' },
+      { n: 'pill', label: 'Medication' },
+      { n: 'stethoscope', label: 'Consult' },
+      { n: 'calendar-check', label: 'Booked' },
+      { n: 'bell', label: 'Reminder' },
+      { n: 'shield-check', label: 'Verified' },
+      { n: 'circle-check-big', label: 'Done' },
+      { n: 'clock', label: 'Due soon' },
+      { n: 'triangle-alert', label: 'Overdue' },
+      { n: 'message-circle', label: 'Message' },
+      { n: 'phone', label: 'Call' },
+      { n: 'file-text', label: 'Records' },
+      { n: 'trending-up', label: 'Trend' },
+      { n: 'users', label: 'Cohort' },
+      { n: 'map-pin', label: 'Location' }
+    ];
+
+    return { tabs, icons };
+  }
+}
+</script>
+</body>
+</html>

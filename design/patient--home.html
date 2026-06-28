@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;}
+</style>
+</helmet>
+
+<!-- ============================ FRAME 1 — MY CARE PLAN ============================ -->
+<div style="position:absolute;left:80px;top:40px;width:390px;">
+  <div data-drags-parent="1" style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.04em;color:#5A6B80;cursor:grab;">
+    <span style="width:7px;height:7px;border-radius:99px;background:#0E8C7F;"></span>PATIENT HOME · MY CARE PLAN
+  </div>
+
+  <div style="width:390px;background:#F7F6F3;border-radius:42px;border:1px solid #E4E2DD;box-shadow:0 30px 80px -30px rgba(19,35,58,.35);overflow:hidden;color:#13233A;">
+
+    <!-- status bar -->
+    <div style="height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;background:#F7F6F3;">
+      <span style="font-size:14px;font-weight:600;letter-spacing:-0.01em;">9:41</span>
+      <div style="display:flex;align-items:center;gap:7px;color:#13233A;">
+        <i data-lucide="signal" style="width:16px;height:16px;"></i>
+        <i data-lucide="wifi" style="width:16px;height:16px;"></i>
+        <i data-lucide="battery-full" style="width:20px;height:20px;"></i>
+      </div>
+    </div>
+
+    <!-- scroll content -->
+    <div style="padding:8px 20px 0;">
+
+      <!-- greeting -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:6px 2px 18px;">
+        <div>
+          <div style="font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.1;">Hi Ananya</div>
+          <div style="font-size:13.5px;color:#5A6B80;margin-top:6px;">Your care plan from Dr. Mehra · 12 Jun</div>
+        </div>
+        <div style="width:42px;height:42px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">AN</div>
+      </div>
+
+      <!-- progress ring card -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:20px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 14px 34px -20px rgba(19,35,58,.18);display:flex;align-items:center;gap:20px;">
+        <svg width="92" height="92" viewBox="0 0 92 92" style="flex-shrink:0;">
+          <circle cx="46" cy="46" r="39" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+          <circle cx="46" cy="46" r="39" fill="none" stroke="#0E8C7F" stroke-width="9" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="122.5" transform="rotate(-90 46 46)"/>
+          <text x="46" y="42" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#13233A" style="font-variant-numeric:tabular-nums;">2/4</text>
+          <text x="46" y="58" text-anchor="middle" font-family="Inter" font-size="9.5" font-weight="500" fill="#8794A5" letter-spacing="0.5">STEPS</text>
+        </svg>
+        <div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">2 of 4 steps done</div>
+          <div style="font-size:13.5px;color:#5A6B80;line-height:1.5;margin-top:5px;">You're halfway there — a small step today keeps you on track.</div>
+        </div>
+      </div>
+
+      <!-- next steps heading -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:26px 4px 14px;">
+        <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">Next steps</div>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>1 overdue</span>
+      </div>
+
+      <!-- ===== OVERDUE CARD ===== -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:18px;padding:18px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 12px 30px -22px rgba(19,35,58,.22);margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="display:flex;gap:13px;align-items:center;min-width:0;">
+            <div style="width:44px;height:44px;border-radius:13px;background:#FBEFDD;color:#A6620F;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="droplet" style="width:22px;height:22px;"></i></div>
+            <div style="min-width:0;">
+              <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;">Fasting blood sugar test</div>
+              <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">Lab · home collection available</div>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#FBEFDD;color:#A6620F;font-size:12px;font-weight:600;flex-shrink:0;"><span style="width:6px;height:6px;border-radius:99px;background:#D9821B;"></span>Overdue</span>
+        </div>
+        <div style="font-size:13.5px;color:#3A4A5E;line-height:1.5;margin-top:14px;">To check if your sugar levels are improving.</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:12px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#A6620F;"><i data-lucide="calendar" style="width:14px;height:14px;"></i>Due by 18 Jun</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:11px;font-weight:600;"><i data-lucide="shield-check" style="width:12px;height:12px;"></i>Clinician-authored</span>
+        </div>
+        <button style="font-family:inherit;width:100%;margin-top:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#0E8C7F;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);"><i data-lucide="home" style="width:17px;height:17px;"></i>Book home collection</button>
+      </div>
+
+      <!-- ===== DUE SOON CARD ===== -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:18px;padding:18px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 12px 30px -22px rgba(19,35,58,.22);margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="display:flex;gap:13px;align-items:center;min-width:0;">
+            <div style="width:44px;height:44px;border-radius:13px;background:#EEF1F5;color:#475569;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="stethoscope" style="width:22px;height:22px;"></i></div>
+            <div style="min-width:0;">
+              <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;">Follow-up with Dr. Mehra</div>
+              <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">Video consult · 15 min</div>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#EEF1F5;color:#475569;font-size:12px;font-weight:600;flex-shrink:0;"><span style="width:6px;height:6px;border-radius:99px;background:#64748B;"></span>Due soon</span>
+        </div>
+        <div style="font-size:13.5px;color:#3A4A5E;line-height:1.5;margin-top:14px;">To review your test results together and adjust your plan.</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:12px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#475569;"><i data-lucide="calendar" style="width:14px;height:14px;"></i>Due by 25 Jun</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;background:#EDF4F3;border:1px solid #CFE6E1;color:#0B6F64;font-size:11px;font-weight:600;"><i data-lucide="shield-check" style="width:12px;height:12px;"></i>Clinician-authored</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <button style="font-family:inherit;flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#0E8C7F;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);"><i data-lucide="video" style="width:17px;height:17px;"></i>Book a slot</button>
+          <button style="font-family:inherit;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:12px;padding:13px 16px;font-size:14.5px;font-weight:600;cursor:pointer;">Reschedule</button>
+        </div>
+      </div>
+
+      <!-- ===== DONE CARD ===== -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:18px;padding:18px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 12px 30px -22px rgba(19,35,58,.22);margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="display:flex;gap:13px;align-items:center;min-width:0;">
+            <div style="width:44px;height:44px;border-radius:13px;background:#E6F4EC;color:#167A41;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="pill" style="width:22px;height:22px;"></i></div>
+            <div style="min-width:0;">
+              <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;">Start Metformin 500mg</div>
+              <div style="font-size:12.5px;color:#8794A5;margin-top:2px;">Once daily, with dinner</div>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#E6F4EC;color:#167A41;font-size:12px;font-weight:600;flex-shrink:0;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Done</span>
+        </div>
+        <div style="font-size:13.5px;color:#3A4A5E;line-height:1.5;margin-top:14px;">Helps bring your blood sugar into a healthy range.</div>
+        <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-radius:12px;background:#E6F4EC;">
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#167A41;"><i data-lucide="check-circle-2" style="width:18px;height:18px;"></i>Completed on 18 Jun</span>
+          <button style="font-family:inherit;background:transparent;color:#167A41;border:none;font-size:13px;font-weight:600;cursor:pointer;padding:0;">View</button>
+        </div>
+      </div>
+
+      <!-- chat card -->
+      <div style="display:flex;align-items:center;gap:14px;background:#13233A;border-radius:18px;padding:16px 18px;margin-top:18px;cursor:pointer;">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="messages-square" style="width:21px;height:21px;"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14.5px;font-weight:600;color:#fff;">Questions? Chat with your care team</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:2px;">Usually replies within an hour</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:19px;height:19px;color:rgba(255,255,255,.55);"></i>
+      </div>
+
+      <div style="height:18px;"></div>
+    </div>
+
+    <!-- bottom tab bar -->
+    <div style="display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #ECEAE5;padding:12px 12px 26px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#0E8C7F;"><i data-lucide="house" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:600;">Home</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="message-circle" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Chat</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="file-text" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Records</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="user" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Profile</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ FRAME 2 — EMPTY / ALL CAUGHT UP ============================ -->
+<div style="position:absolute;left:560px;top:40px;width:390px;">
+  <div data-drags-parent="1" style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.04em;color:#5A6B80;cursor:grab;">
+    <span style="width:7px;height:7px;border-radius:99px;background:#1F9D55;"></span>VARIANT · ALL CAUGHT UP
+  </div>
+
+  <div style="width:390px;background:#F7F6F3;border-radius:42px;border:1px solid #E4E2DD;box-shadow:0 30px 80px -30px rgba(19,35,58,.35);overflow:hidden;color:#13233A;">
+
+    <div style="height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;background:#F7F6F3;">
+      <span style="font-size:14px;font-weight:600;letter-spacing:-0.01em;">9:41</span>
+      <div style="display:flex;align-items:center;gap:7px;color:#13233A;">
+        <i data-lucide="signal" style="width:16px;height:16px;"></i>
+        <i data-lucide="wifi" style="width:16px;height:16px;"></i>
+        <i data-lucide="battery-full" style="width:20px;height:20px;"></i>
+      </div>
+    </div>
+
+    <div style="padding:8px 20px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:6px 2px 18px;">
+        <div>
+          <div style="font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.1;">Hi Ananya</div>
+          <div style="font-size:13.5px;color:#5A6B80;margin-top:6px;">Your care plan from Dr. Mehra · 12 Jun</div>
+        </div>
+        <div style="width:42px;height:42px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">AN</div>
+      </div>
+
+      <!-- complete ring card -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:20px;padding:20px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 14px 34px -20px rgba(19,35,58,.18);display:flex;align-items:center;gap:20px;">
+        <svg width="92" height="92" viewBox="0 0 92 92" style="flex-shrink:0;">
+          <circle cx="46" cy="46" r="39" fill="none" stroke="#EEF0EE" stroke-width="9"/>
+          <circle cx="46" cy="46" r="39" fill="none" stroke="#1F9D55" stroke-width="9" stroke-linecap="round" stroke-dasharray="245" stroke-dashoffset="0" transform="rotate(-90 46 46)"/>
+          <text x="46" y="42" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#167A41" style="font-variant-numeric:tabular-nums;">4/4</text>
+          <text x="46" y="58" text-anchor="middle" font-family="Inter" font-size="9.5" font-weight="500" fill="#8794A5" letter-spacing="0.5">STEPS</text>
+        </svg>
+        <div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">All steps done</div>
+          <div style="font-size:13.5px;color:#5A6B80;line-height:1.5;margin-top:5px;">Wonderful work, Ananya. Your care team has been updated.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;margin:26px 4px 14px;">
+        <div style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">Next steps</div>
+      </div>
+
+      <!-- empty state -->
+      <div style="background:#fff;border:1px solid #EDEBE6;border-radius:18px;padding:38px 24px;box-shadow:0 1px 2px rgba(19,35,58,.04);text-align:center;">
+        <div style="width:64px;height:64px;border-radius:99px;background:#E6F4EC;color:#1F9D55;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;"><i data-lucide="check" style="width:30px;height:30px;"></i></div>
+        <div style="font-size:16.5px;font-weight:600;letter-spacing:-0.01em;">No pending steps</div>
+        <div style="font-size:13.5px;color:#5A6B80;line-height:1.5;margin-top:7px;max-width:240px;margin-left:auto;margin-right:auto;">You're all caught up. We'll let you know when Dr. Mehra adds something new.</div>
+        <div style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;padding:8px 14px;border-radius:999px;background:#E6F4EC;color:#167A41;font-size:13px;font-weight:600;"><i data-lucide="party-popper" style="width:16px;height:16px;"></i>All caught up</div>
+      </div>
+
+      <!-- chat card -->
+      <div style="display:flex;align-items:center;gap:14px;background:#13233A;border-radius:18px;padding:16px 18px;margin-top:18px;cursor:pointer;">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="messages-square" style="width:21px;height:21px;"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14.5px;font-weight:600;color:#fff;">Questions? Chat with your care team</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:2px;">Usually replies within an hour</div>
+        </div>
+        <i data-lucide="chevron-right" style="width:19px;height:19px;color:rgba(255,255,255,.55);"></i>
+      </div>
+
+      <div style="height:18px;"></div>
+    </div>
+
+    <div style="display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #ECEAE5;padding:12px 12px 26px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#0E8C7F;"><i data-lucide="house" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:600;">Home</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="message-circle" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Chat</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="file-text" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Records</span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#A2AAB4;"><i data-lucide="user" style="width:23px;height:23px;"></i><span style="font-size:11px;font-weight:500;">Profile</span></div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() { this.drawIcons(); }
+  componentDidUpdate() { this.drawIcons(); }
+  drawIcons() {
+    if (window.lucide) {
+      try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {}
+    } else {
+      setTimeout(() => this.drawIcons(), 120);
+    }
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

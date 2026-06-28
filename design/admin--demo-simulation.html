@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#F7F6F3;}
+  ::selection{background:#0E8C7F;color:#fff;}
+  @keyframes feedIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(31,157,85,.5);}70%{box-shadow:0 0 0 6px rgba(31,157,85,0);}100%{box-shadow:0 0 0 0 rgba(31,157,85,0);}}
+  @keyframes dayPop{0%{transform:scale(.92);}55%{transform:scale(1.04);}100%{transform:scale(1);}}
+  .sim-scroll::-webkit-scrollbar{width:7px;}
+  .sim-scroll::-webkit-scrollbar-thumb{background:#DAD7D0;border-radius:99px;}
+  .sim-scroll::-webkit-scrollbar-track{background:transparent;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#F7F6F3;font-family:'Inter',system-ui,sans-serif;color:#13233A;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;padding:40px 24px;">
+
+  <div style="width:460px;background:#FFFFFF;border:1px solid #EDEBE6;border-radius:20px;box-shadow:0 1px 2px rgba(19,35,58,.04),0 24px 60px -28px rgba(19,35,58,.28);overflow:hidden;">
+
+    <!-- HEADER -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:22px 24px 18px;border-bottom:1px solid #F0EEEA;">
+      <div style="display:flex;align-items:center;gap:13px;">
+        <div style="width:40px;height:40px;border-radius:11px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;">
+          <i data-lucide="git-merge" style="width:21px;height:21px;"></i>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:600;letter-spacing:-0.015em;line-height:1.1;">Demo Simulation</div>
+          <div style="font-size:12.5px;color:#8794A5;margin-top:3px;">Watch the closed loop run</div>
+        </div>
+      </div>
+      <span style="display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.12em;color:#167A41;background:#E6F4EC;border:1px solid #D2EBDC;padding:5px 10px 5px 8px;border-radius:999px;text-transform:uppercase;">
+        <span style="width:7px;height:7px;border-radius:99px;background:#1F9D55;animation:livePulse 1.8s infinite;"></span>Live
+      </span>
+    </div>
+
+    <!-- DAY + ADVANCE -->
+    <div style="padding:20px 24px 22px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#8794A5;">Current day</div>
+          <div style="display:flex;align-items:baseline;gap:11px;margin-top:7px;">
+            <div style="font-size:38px;font-weight:600;letter-spacing:-0.025em;line-height:1;font-variant-numeric:tabular-nums;animation:dayPop .35s ease;" key="{{ dateLabel }}">{{ dateLabel }}</div>
+            <span style="font-size:12px;font-weight:600;color:#0B6F64;background:#EDF4F3;border:1px solid #CFE6E1;padding:4px 10px;border-radius:999px;font-variant-numeric:tabular-nums;">Day {{ dayNum }}</span>
+          </div>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#B7BFC9;letter-spacing:0.04em;">{{ stamp }}</span>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button onClick="{{ onAdvance1 }}" style="flex:1;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#0E8C7F;color:#fff;border:none;border-radius:11px;padding:13px 16px;font-size:14.5px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(14,140,127,.3);transition:transform .08s,background .15s;" style-hover="background:#0B6F64;" style-active="transform:scale(.97);">Advance 1 day<i data-lucide="play" style="width:16px;height:16px;"></i></button>
+        <button onClick="{{ onAdvance7 }}" style="font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:11px;padding:13px 16px;font-size:14.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform .08s,background .15s;" style-hover="background:#F2F8F7;" style-active="transform:scale(.97);">+7 days<i data-lucide="chevrons-right" style="width:17px;height:17px;"></i></button>
+      </div>
+
+      <!-- RUNNING TOTALS -->
+      <sc-if value="{{ showTotals }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:16px;">
+          <div style="background:#FAF9F6;border:1px solid #EDEBE6;border-radius:12px;padding:12px 13px;">
+            <div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">{{ nudged }}</div>
+            <div style="font-size:11px;color:#8794A5;margin-top:2px;line-height:1.3;">Members nudged</div>
+          </div>
+          <div style="background:#FAF9F6;border:1px solid #EDEBE6;border-radius:12px;padding:12px 13px;">
+            <div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#167A41;">{{ closed }}</div>
+            <div style="font-size:11px;color:#8794A5;margin-top:2px;line-height:1.3;">Actions auto-closed</div>
+          </div>
+          <div style="background:#FAF9F6;border:1px solid #EDEBE6;border-radius:12px;padding:12px 13px;">
+            <div style="font-size:21px;font-weight:600;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;color:#A8332F;">{{ routed }}</div>
+            <div style="font-size:11px;color:#8794A5;margin-top:2px;line-height:1.3;">Routed to navigator</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- LIVE FEED -->
+    <div style="padding:2px 24px 4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#8794A5;">Live activity</div>
+        <span style="font-size:11px;color:#B7BFC9;font-variant-numeric:tabular-nums;">{{ feedCount }} events</span>
+      </div>
+
+      <div class="sim-scroll" style="max-height:212px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;">
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:34px 20px;text-align:center;color:#A6AEB9;border:1px dashed #E2E0DA;border-radius:13px;">
+            <i data-lucide="git-commit-horizontal" style="width:22px;height:22px;"></i>
+            <div style="font-size:13px;color:#8794A5;max-width:230px;line-height:1.5;">Press <strong style="color:#0B6F64;">Advance 1 day</strong> to run the loop and watch actions resolve.</div>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ events }}" as="ev" hint-placeholder-count="0">
+          <div key="{{ ev.id }}" style="{{ ev.row }}">
+            <div style="{{ ev.chip }}"><i data-lucide="{{ ev.icon }}" style="width:16px;height:16px;"></i></div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:500;line-height:1.4;color:#26384F;">{{ ev.text }}</div>
+            </div>
+            <span style="{{ ev.tag }}">{{ ev.dayLabel }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;margin-top:8px;border-top:1px solid #F0EEEA;">
+      <button onClick="{{ onTogglePlay }}" style="{{ playStyle }}"><i data-lucide="{{ playIcon }}" style="width:16px;height:16px;"></i>{{ playLabel }}</button>
+      <button onClick="{{ onReset }}" style="font-family:inherit;display:inline-flex;align-items:center;gap:7px;background:transparent;color:#5A6B80;border:none;border-radius:9px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;" style-hover="background:#F4F2EE;color:#13233A;"><i data-lucide="rotate-ccw" style="width:15px;height:15px;"></i>Reset demo</button>
+    </div>
+
+    <!-- ROLE SWITCHER -->
+    <div style="padding:16px 24px 22px;background:#FAF9F6;border-top:1px solid #F0EEEA;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#8794A5;margin-bottom:11px;">View as</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:#F1EFEB;border:1px solid #E7E5E0;border-radius:12px;padding:4px;gap:3px;">
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+          <button onClick="{{ r.onClick }}" style="{{ r.style }}">
+            <i data-lucide="{{ r.icon }}" style="width:16px;height:16px;"></i>
+            <span style="font-size:12px;font-weight:600;">{{ r.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:540,&quot;height&quot;:880},&quot;showTotals&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;,&quot;unit&quot;:&quot;&quot;},&quot;compactFeed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;autoStepMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1600,&quot;min&quot;:600,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;defaultRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:1,&quot;options&quot;:[0,1,2,3],&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const MS = 86400000;
+    this.MS = MS;
+    this.baseTime = Date.UTC(2026, 5, 14); // 14 Jun 2026
+    this.months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    this.state = {
+      offset: 0,
+      dayNum: 1,
+      events: [],
+      nudged: 0,
+      closed: 0,
+      routed: 0,
+      role: typeof props.defaultRole === 'number' ? props.defaultRole : 1,
+      rot: 0,
+      nextId: 1,
+      playing: false
+    };
+  }
+
+  fmt(t) {
+    const d = new Date(t);
+    return d.getUTCDate() + ' ' + this.months[d.getUTCMonth()];
+  }
+
+  componentDidMount() { this.drawIcons(); }
+  componentDidUpdate() { this.drawIcons(); }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
+  drawIcons() {
+    if (window.lucide) { try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {} }
+    else { setTimeout(() => this.drawIcons(), 120); }
+  }
+
+  rnd(min, max) { return min + Math.floor(Math.random() * (max - min + 1)); }
+
+  build(kind) {
+    const slate = { dot: '#64748B', bg: '#EEF1F5', bd: '#DEE4EC', fg: '#475569' };
+    const green = { dot: '#1F9D55', bg: '#E6F4EC', bd: '#D2EBDC', fg: '#167A41' };
+    const red   = { dot: '#D24B47', bg: '#FAE8E7', bd: '#F1CFCD', fg: '#A8332F' };
+    const amber = { dot: '#D9821B', bg: '#FBEFDD', bd: '#F0DDBE', fg: '#A6620F' };
+    const teal  = { dot: '#0E8C7F', bg: '#EDF4F3', bd: '#CFE6E1', fg: '#0B6F64' };
+    if (kind === 'nudge') { const n = this.rnd(12, 22); return { k: 'nudge', icon: 'bell-ring', text: 'Nudge sent to ' + n + ' members', n, c: slate }; }
+    if (kind === 'closed') { const n = this.rnd(2, 5); return { k: 'closed', icon: 'circle-check-big', text: n + ' lab tests completed \u2192 actions auto-closed', n, c: green }; }
+    if (kind === 'routed') { const n = this.rnd(1, 2); return { k: 'routed', icon: 'route', text: n + ' member' + (n > 1 ? 's' : '') + ' declined \u2192 routed to navigator', n, c: red }; }
+    if (kind === 'high') { const n = this.rnd(1, 3); return { k: 'high', icon: 'trending-up', text: 'Risk recomputed: ' + n + ' members \u2192 High', n, c: amber }; }
+    return { k: 'summary', icon: 'check-check', text: '', n: 0, c: teal };
+  }
+
+  advance(days) {
+    this.setState(s => {
+      const newOffset = s.offset + days;
+      const label = this.fmt(this.baseTime + newOffset * this.MS);
+      const order = ['nudge', 'closed', 'routed', 'high'];
+      let seq;
+      if (days >= 7) seq = order.slice();
+      else { const i = s.rot % 4; seq = [order[i], order[(i + 1) % 4]]; }
+
+      const built = seq.map(k => this.build(k));
+      const add = { nudged: 0, closed: 0, routed: 0 };
+      built.forEach(e => {
+        if (e.k === 'nudge') add.nudged += e.n;
+        if (e.k === 'closed') add.closed += e.n;
+        if (e.k === 'routed') add.routed += e.n;
+      });
+      if (days >= 7) {
+        const sum = this.build('summary');
+        sum.text = 'Week closed \u00b7 ' + add.closed + ' actions auto-resolved';
+        built.push(sum);
+      }
+
+      const stamped = built.map((e, idx) => ({ ...e, id: s.nextId + idx, dayLabel: label }));
+      const events = [...stamped.reverse(), ...s.events].slice(0, 40);
+
+      return {
+        offset: newOffset,
+        dayNum: s.dayNum + days,
+        events,
+        nudged: s.nudged + add.nudged,
+        closed: s.closed + add.closed,
+        routed: s.routed + add.routed,
+        nextId: s.nextId + stamped.length,
+        rot: days >= 7 ? s.rot : s.rot + 2
+      };
+    });
+  }
+
+  togglePlay() {
+    if (this.timer) {
+      clearInterval(this.timer); this.timer = null;
+      this.setState({ playing: false });
+    } else {
+      const ms = this.props.autoStepMs || 1600;
+      this.timer = setInterval(() => this.advance(1), ms);
+      this.setState({ playing: true });
+    }
+  }
+
+  reset() {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+    this.setState({ offset: 0, dayNum: 1, events: [], nudged: 0, closed: 0, routed: 0, rot: 0, nextId: 1, playing: false });
+  }
+
+  renderVals() {
+    const compact = !!this.props.compactFeed;
+    const events = this.state.events.map(e => ({
+      id: e.id,
+      icon: e.icon,
+      text: e.text,
+      dayLabel: e.dayLabel,
+      row: {
+        display: 'flex', alignItems: 'center', gap: '11px',
+        padding: compact ? '8px 11px' : '11px 12px',
+        background: '#fff', border: '1px solid #EFEDE8', borderRadius: '11px',
+        boxShadow: '0 1px 2px rgba(19,35,58,.03)',
+        animation: 'feedIn .32s cubic-bezier(.2,.8,.2,1)'
+      },
+      chip: {
+        flex: '0 0 auto', width: '30px', height: '30px', borderRadius: '9px',
+        background: e.c.bg, border: '1px solid ' + e.c.bd, color: e.c.fg,
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      },
+      tag: {
+        flex: '0 0 auto', fontFamily: "'JetBrains Mono',monospace", fontSize: '10px',
+        color: '#A6AEB9', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap'
+      }
+    }));
+
+    const roleDefs = [
+      { label: 'Patient', icon: 'user' },
+      { label: 'Navigator', icon: 'compass' },
+      { label: 'Clinician', icon: 'stethoscope' },
+      { label: 'Employer', icon: 'building-2' }
+    ];
+    const roles = roleDefs.map((r, i) => {
+      const active = this.state.role === i;
+      return {
+        label: r.label, icon: r.icon,
+        onClick: () => this.setState({ role: i }),
+        style: {
+          fontFamily: 'inherit', cursor: 'pointer', border: 'none',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
+          padding: '9px 4px', borderRadius: '9px', transition: 'all .15s',
+          background: active ? '#FFFFFF' : 'transparent',
+          color: active ? '#0B6F64' : '#5A6B80',
+          boxShadow: active ? '0 1px 3px rgba(19,35,58,.14)' : 'none'
+        }
+      };
+    });
+
+    const playing = this.state.playing;
+    return {
+      dateLabel: this.fmt(this.baseTime + this.state.offset * this.MS),
+      dayNum: this.state.dayNum,
+      stamp: '09:' + String(12 + (this.state.dayNum % 40)).padStart(2, '0') + ' AM',
+      nudged: this.state.nudged,
+      closed: this.state.closed,
+      routed: this.state.routed,
+      showTotals: this.props.showTotals !== false,
+      events,
+      feedCount: this.state.events.length,
+      isEmpty: this.state.events.length === 0,
+      roles,
+      onAdvance1: () => this.advance(1),
+      onAdvance7: () => this.advance(7),
+      onReset: () => this.reset(),
+      onTogglePlay: () => this.togglePlay(),
+      playLabel: playing ? 'Pause' : 'Auto-play',
+      playIcon: playing ? 'pause' : 'play-circle',
+      playStyle: {
+        fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '7px',
+        border: '1px solid ' + (playing ? '#BFDCD7' : '#E7E5E0'),
+        background: playing ? '#EDF4F3' : '#fff',
+        color: playing ? '#0B6F64' : '#5A6B80',
+        borderRadius: '9px', padding: '9px 13px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+        transition: 'all .15s'
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

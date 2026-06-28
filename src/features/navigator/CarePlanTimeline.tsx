@@ -1,4 +1,5 @@
 import { HeartPulse, FlaskConical, Pill, Stethoscope, Activity, Syringe, Check, Zap } from 'lucide-react'
+import { format } from 'date-fns'
 import type { Tables } from '@/lib/database.types'
 
 type ActionRow = Tables<'care_plan_actions'>
@@ -38,7 +39,7 @@ function nodeTheme(action: ActionRow): NodeTheme {
   return map[action.status] ?? map.pending
 }
 
-function StatusBadge({ action }: { action: ActionRow }) {
+function StatusBadge({ action, simDay }: { action: ActionRow; simDay?: Date }) {
   if (action.completed_via_event_id || action.status === 'completed') {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '5px 11px', borderRadius: '999px', background: '#E6F4EC', color: '#167A41', fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}>
@@ -47,7 +48,7 @@ function StatusBadge({ action }: { action: ActionRow }) {
     )
   }
   const map: Record<string, { bg: string; text: string; dot?: string; label: string }> = {
-    overdue: { bg: '#FBEFDD', text: '#A6620F', dot: '#D9821B', label: 'Overdue' },
+    overdue: { bg: '#FBEFDD', text: '#A6620F', dot: '#D9821B', label: simDay && action.due_date ? (Math.round((simDay.getTime() - new Date(action.due_date).getTime()) / 86400000) > 0 ? `Overdue ${Math.round((simDay.getTime() - new Date(action.due_date).getTime()) / 86400000)}d` : 'Overdue today') : 'Overdue' },
     declined: { bg: '#FAE8E7', text: '#A8332F', dot: '#D24B47', label: 'Declined' },
     pending: { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Pending' },
     scheduled: { bg: '#EDF4F3', text: '#0B6F64', dot: '#0E8C7F', label: 'Scheduled' },
@@ -66,10 +67,12 @@ export function CarePlanTimeline({
   actions,
   providerName,
   consultAt,
+  simDay,
 }: {
   actions: ActionRow[]
   providerName: string | null
   consultAt: string | null
+  simDay?: Date
 }) {
   return (
     <div
@@ -151,7 +154,7 @@ export function CarePlanTimeline({
                 {isAutoCompleted && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 16px', background: '#0E8C7F', color: '#fff', fontSize: '11.5px', fontWeight: 600, letterSpacing: '0.01em' }}>
                     <Zap size={14} strokeWidth={1.75} />
-                    Auto-completed from diagnostics event
+                    Auto-completed from diagnostics event{action.updated_at ? ` · ${format(new Date(action.updated_at), 'd MMM')}` : ''}
                   </div>
                 )}
                 <div style={{ padding: '15px 17px' }}>
@@ -164,7 +167,7 @@ export function CarePlanTimeline({
                         </div>
                       )}
                     </div>
-                    <StatusBadge action={action} />
+                    <StatusBadge action={action} simDay={simDay} />
                   </div>
 
                   {action.status === 'declined' && action.decline_reason && (

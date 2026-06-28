@@ -14,6 +14,7 @@ import {
   Clock,
   MapPin,
   X,
+  ChevronDown,
 } from 'lucide-react'
 import { listNavigatorTasks, type NavigatorTaskWithMember } from '@/lib/api/navigator-tasks'
 import { getAtRiskActionForMember, type ActionRow } from '@/lib/api/care-plans'
@@ -26,29 +27,29 @@ const TRIGGER_CFG: Record<
   Enums<'task_reason'>,
   { label: string; Icon: React.FC<{ size?: number; strokeWidth?: number }>; color: string }
 > = {
-  post_er_72h: { label: 'ER discharge — 72h follow-up', Icon: Activity, color: '#D24B47' },
-  declined_mandatory: { label: 'Declined mandatory test', Icon: CircleSlash, color: '#D24B47' },
-  repeat_dropper: { label: 'Repeat drop-off', Icon: RotateCcw, color: '#D9821B' },
-  abnormal_result: { label: 'Abnormal result', Icon: Activity, color: '#D9821B' },
-  high_risk_overdue: { label: 'High-risk overdue', Icon: Clock, color: '#D9821B' },
-  structural_barrier: { label: 'Structural barrier', Icon: MapPin, color: '#D9821B' },
+  post_er_72h:         { label: 'ER discharge — 72h follow-up', Icon: Activity,    color: '#D24B47' },
+  declined_mandatory:  { label: 'Declined mandatory test',       Icon: CircleSlash, color: '#D24B47' },
+  repeat_dropper:      { label: 'Repeat drop-off',               Icon: RotateCcw,  color: '#D9821B' },
+  abnormal_result:     { label: 'Abnormal result',               Icon: Activity,    color: '#D9821B' },
+  high_risk_overdue:   { label: 'High-risk overdue',             Icon: Clock,       color: '#D9821B' },
+  structural_barrier:  { label: 'Structural barrier',            Icon: MapPin,      color: '#D9821B' },
 }
 
 const SEG_CFG: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  forgot: { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Needs reminder' },
-  cost: { bg: '#FBEFDD', text: '#A6620F', dot: '#D9821B', label: 'Cost barrier' },
+  forgot:       { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Needs reminder' },
+  cost:         { bg: '#FBEFDD', text: '#A6620F', dot: '#D9821B', label: 'Cost barrier' },
   feels_better: { bg: '#E6F4EC', text: '#167A41', dot: '#1F9D55', label: 'Feels better' },
-  logistics: { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Transport' },
-  lost_thread: { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Lost thread' },
-  trust: { bg: '#FAE8E7', text: '#A8332F', dot: '#D24B47', label: 'Trust barrier' },
-  avoidance: { bg: '#FAE8E7', text: '#A8332F', dot: '#D24B47', label: 'Avoidance' },
-  none: { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Unknown' },
+  logistics:    { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Transport' },
+  lost_thread:  { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Lost thread' },
+  trust:        { bg: '#FAE8E7', text: '#A8332F', dot: '#D24B47', label: 'Trust barrier' },
+  avoidance:    { bg: '#FAE8E7', text: '#A8332F', dot: '#D24B47', label: 'Avoidance' },
+  none:         { bg: '#EEF1F5', text: '#475569', dot: '#64748B', label: 'Unknown' },
 }
 
 const RISK_CFG: Record<string, { bg: string; text: string; label: string }> = {
-  high: { bg: '#FAE8E7', text: '#A8332F', label: 'High' },
+  high:   { bg: '#FAE8E7', text: '#A8332F', label: 'High' },
   medium: { bg: '#FBEFDD', text: '#A6620F', label: 'Med' },
-  low: { bg: '#EEF1F5', text: '#475569', label: 'Low' },
+  low:    { bg: '#EEF1F5', text: '#475569', label: 'Low' },
 }
 
 const PRIO_CFG: Record<string, { bg: string; text: string }> = {
@@ -56,6 +57,31 @@ const PRIO_CFG: Record<string, { bg: string; text: string }> = {
   p2: { bg: '#FBEFDD', text: '#A6620F' },
   p3: { bg: '#EEF1F5', text: '#475569' },
 }
+
+// ── Filter option constants ────────────────────────────────────────────────
+
+const PRIORITY_OPTIONS = [
+  { value: 'p1', label: 'P1 — Urgent' },
+  { value: 'p2', label: 'P2 — High' },
+  { value: 'p3', label: 'P3 — Standard' },
+]
+
+const RISK_OPTIONS = [
+  { value: 'high',   label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low',    label: 'Low' },
+]
+
+const SEGMENT_OPTIONS = Object.entries(SEG_CFG)
+  .filter(([k]) => k !== 'none')
+  .map(([value, cfg]) => ({ value, label: cfg.label }))
+
+const TRIGGER_OPTIONS = Object.entries(TRIGGER_CFG).map(([value, cfg]) => ({
+  value: value as Enums<'task_reason'>,
+  label: cfg.label,
+}))
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 function calcAge(dob: string | null, today: Date): number | null {
   if (!dob) return null
@@ -79,6 +105,93 @@ function formatSimDate(d: Date): string {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+// ── FilterDropdown ─────────────────────────────────────────────────────────
+
+function FilterDropdown({
+  id,
+  label,
+  options,
+  value,
+  onChange,
+  isOpen,
+  onToggle,
+}: {
+  id: string
+  label: string
+  options: { value: string; label: string }[]
+  value: string | null
+  onChange: (v: string | null) => void
+  isOpen: boolean
+  onToggle: (id: string | null) => void
+}) {
+  if (value) {
+    const activeLabel = options.find((o) => o.value === value)?.label ?? value
+    return (
+      <button
+        onClick={() => onChange(null)}
+        style={{
+          fontFamily: 'inherit',
+          display: 'inline-flex', alignItems: 'center', gap: '7px',
+          background: '#EDF4F3', border: '1px solid #BFDCD7',
+          borderRadius: '10px', padding: '8px 13px',
+          fontSize: '13px', fontWeight: 600, color: '#0B6F64', cursor: 'pointer',
+        }}
+      >
+        {label}: {activeLabel}
+        <X size={14} strokeWidth={1.75} />
+      </button>
+    )
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => onToggle(isOpen ? null : id)}
+        style={{
+          fontFamily: 'inherit',
+          display: 'inline-flex', alignItems: 'center', gap: '7px',
+          background: '#fff', border: '1px solid #E4E2DD',
+          borderRadius: '10px', padding: '8px 13px',
+          fontSize: '13px', fontWeight: 600, color: '#13233A', cursor: 'pointer',
+        }}
+      >
+        {label}
+        <ChevronDown size={14} strokeWidth={1.75} style={{ color: '#8794A5' }} />
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
+            background: '#fff', border: '1px solid #E4E2DD',
+            borderRadius: '12px', padding: '6px',
+            boxShadow: '0 4px 16px rgba(19,35,58,.12)',
+            minWidth: '175px',
+          }}
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => { onChange(opt.value); onToggle(null) }}
+              style={{
+                fontFamily: 'inherit',
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '9px 12px', borderRadius: '8px',
+                border: 'none', background: 'none',
+                fontSize: '13px', color: '#3A4A5E', cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#F7F6F3' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'none' }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 
 type RowData = {
@@ -92,7 +205,11 @@ export function WorklistPage() {
   const [simDay, setSimDay] = useState<Date>(new Date())
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [triggerFilter, setTriggerFilter] = useState<string | null>(null)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [priorityFilter, setPriorityFilter] = useState<string | null>(null)
+  const [riskFilter, setRiskFilter] = useState<string | null>(null)
+  const [segmentFilter, setSegmentFilter] = useState<string | null>(null)
+  const [triggerFilter, setTriggerFilter] = useState<Enums<'task_reason'> | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -105,9 +222,7 @@ export function WorklistPage() {
       const enriched = await Promise.all(
         tasks.map(async (task) => ({
           task,
-          atRiskAction: task.member_id
-            ? await getAtRiskActionForMember(task.member_id)
-            : null,
+          atRiskAction: task.member_id ? await getAtRiskActionForMember(task.member_id) : null,
         })),
       )
       setRows(enriched)
@@ -116,8 +231,10 @@ export function WorklistPage() {
     load()
   }, [])
 
-  // Filter + search
   const filtered = rows.filter((r) => {
+    if (priorityFilter && r.task.priority !== priorityFilter) return false
+    if (riskFilter && (r.task.member?.risk_tier ?? 'low') !== riskFilter) return false
+    if (segmentFilter && (r.task.member?.drop_segment ?? 'none') !== segmentFilter) return false
     if (triggerFilter && r.task.trigger_reason !== triggerFilter) return false
     if (search) {
       const q = search.toLowerCase()
@@ -127,21 +244,25 @@ export function WorklistPage() {
   })
 
   const openCount = rows.length
-  const resolvedToday = 0 // would query resolved_at = simDay; demo uses 0 until sim runs
+  const resolvedToday = 0
   const p1Count = rows.filter((r) => r.task.priority === 'p1').length
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      {/* Backdrop — closes all dropdowns on outside click */}
+      {openDropdown && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+          onClick={() => setOpenDropdown(null)}
+        />
+      )}
+
       {/* ── Top bar ── */}
       <header
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '22px 28px',
-          background: '#fff',
-          borderBottom: '1px solid #ECEAE5',
-          flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '22px 28px', background: '#fff',
+          borderBottom: '1px solid #ECEAE5', flexShrink: 0,
         }}
       >
         <div>
@@ -154,7 +275,6 @@ export function WorklistPage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          {/* Open tasks */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', borderRadius: '13px', background: '#F7F6F3', border: '1px solid #ECEAE5' }}>
             <Inbox size={18} strokeWidth={1.75} style={{ color: '#5A6B80' }} />
             <div>
@@ -162,7 +282,6 @@ export function WorklistPage() {
               <div style={{ fontSize: '11px', color: '#8794A5', marginTop: '3px' }}>Open tasks</div>
             </div>
           </div>
-          {/* Resolved today */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', borderRadius: '13px', background: '#F7F6F3', border: '1px solid #ECEAE5' }}>
             <CircleCheckBig size={18} strokeWidth={1.75} style={{ color: '#1F9D55' }} />
             <div>
@@ -170,7 +289,6 @@ export function WorklistPage() {
               <div style={{ fontSize: '11px', color: '#8794A5', marginTop: '3px' }}>Resolved today</div>
             </div>
           </div>
-          {/* P1 urgent */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', borderRadius: '13px', background: p1Count > 0 ? '#FAE8E7' : '#F7F6F3', border: `1px solid ${p1Count > 0 ? '#F1CFCD' : '#ECEAE5'}` }}>
             <AlertTriangle size={18} strokeWidth={1.75} style={{ color: p1Count > 0 ? '#D24B47' : '#5A6B80' }} />
             <div>
@@ -184,40 +302,42 @@ export function WorklistPage() {
       {/* ── Filters ── */}
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '16px 28px',
-          flexShrink: 0,
+          display: 'flex', alignItems: 'center', gap: '10px',
+          padding: '16px 28px', flexShrink: 0,
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', fontSize: '12.5px', fontWeight: 600, color: '#8794A5' }}>
           <SlidersHorizontal size={15} strokeWidth={1.75} /> Filter
         </span>
 
-        {(['post_er_72h', 'declined_mandatory', 'high_risk_overdue'] as Enums<'task_reason'>[]).map((reason) => (
-          <button
-            key={reason}
-            onClick={() => setTriggerFilter(triggerFilter === reason ? null : reason)}
-            style={{
-              fontFamily: 'inherit',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              background: triggerFilter === reason ? '#EDF4F3' : '#fff',
-              border: `1px solid ${triggerFilter === reason ? '#BFDCD7' : '#E4E2DD'}`,
-              borderRadius: '10px',
-              padding: '8px 13px',
-              fontSize: '13px',
-              fontWeight: 600,
-              color: triggerFilter === reason ? '#0B6F64' : '#13233A',
-              cursor: 'pointer',
-            }}
-          >
-            {TRIGGER_CFG[reason].label}
-            {triggerFilter === reason && <X size={14} strokeWidth={1.75} />}
-          </button>
-        ))}
+        <FilterDropdown
+          id="priority" label="Priority"
+          options={PRIORITY_OPTIONS} value={priorityFilter}
+          onChange={setPriorityFilter}
+          isOpen={openDropdown === 'priority'}
+          onToggle={setOpenDropdown}
+        />
+        <FilterDropdown
+          id="risk" label="Risk tier"
+          options={RISK_OPTIONS} value={riskFilter}
+          onChange={setRiskFilter}
+          isOpen={openDropdown === 'risk'}
+          onToggle={setOpenDropdown}
+        />
+        <FilterDropdown
+          id="segment" label="Segment"
+          options={SEGMENT_OPTIONS} value={segmentFilter}
+          onChange={setSegmentFilter}
+          isOpen={openDropdown === 'segment'}
+          onToggle={setOpenDropdown}
+        />
+        <FilterDropdown
+          id="trigger" label="Trigger"
+          options={TRIGGER_OPTIONS} value={triggerFilter}
+          onChange={(v) => setTriggerFilter(v as Enums<'task_reason'> | null)}
+          isOpen={openDropdown === 'trigger'}
+          onToggle={setOpenDropdown}
+        />
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span style={{ fontSize: '12.5px', color: '#8794A5' }}>
@@ -229,7 +349,7 @@ export function WorklistPage() {
               placeholder="Search patients…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ border: 'none', outline: 'none', fontSize: '13px', color: '#13233A', background: 'transparent', width: '100%' }}
+              style={{ border: 'none', outline: 'none', fontSize: '13px', color: '#13233A', background: 'transparent', width: '100%', fontFamily: 'inherit' }}
             />
           </div>
         </div>
@@ -239,14 +359,10 @@ export function WorklistPage() {
       <div style={{ flex: 1, overflow: 'hidden', padding: '0 28px 28px' }}>
         <div
           style={{
-            background: '#fff',
-            border: '1px solid #ECEAE5',
-            borderRadius: '16px',
-            overflow: 'hidden',
+            background: '#fff', border: '1px solid #ECEAE5',
+            borderRadius: '16px', overflow: 'hidden',
             boxShadow: '0 1px 2px rgba(19,35,58,.04), 0 14px 34px -24px rgba(19,35,58,.18)',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
+            height: '100%', display: 'flex', flexDirection: 'column',
           }}
         >
           {/* Column header */}
@@ -254,17 +370,10 @@ export function WorklistPage() {
             style={{
               display: 'grid',
               gridTemplateColumns: '78px 184px 84px 142px 230px 1fr 158px',
-              alignItems: 'center',
-              gap: '14px',
-              padding: '13px 20px',
-              borderBottom: '1px solid #ECEAE5',
-              background: '#FBFAF8',
-              fontSize: '11px',
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              color: '#8794A5',
-              textTransform: 'uppercase',
-              flexShrink: 0,
+              alignItems: 'center', gap: '14px', padding: '13px 20px',
+              borderBottom: '1px solid #ECEAE5', background: '#FBFAF8',
+              fontSize: '11px', fontWeight: 600, letterSpacing: '0.06em',
+              color: '#8794A5', textTransform: 'uppercase', flexShrink: 0,
             }}
           >
             <div>Priority</div>
@@ -304,9 +413,7 @@ export function WorklistPage() {
                   style={{
                     display: 'grid',
                     gridTemplateColumns: '78px 184px 84px 142px 230px 1fr 158px',
-                    alignItems: 'center',
-                    gap: '14px',
-                    padding: '15px 20px',
+                    alignItems: 'center', gap: '14px', padding: '15px 20px',
                     borderBottom: '1px solid #F2F0EC',
                     borderLeft: `3px solid ${isPrio1 ? '#D24B47' : 'transparent'}`,
                     background: isPrio1 ? '#FDF6F5' : '#fff',
@@ -325,7 +432,7 @@ export function WorklistPage() {
                       {member?.full_name ?? '—'}
                     </div>
                     <div style={{ fontSize: '12px', color: '#8794A5', marginTop: '2px' }}>
-                      {age != null ? `${age} · ` : ''}{member?.gender ?? ''}
+                      {[age, member?.gender].filter(Boolean).join(' · ')}
                     </div>
                   </div>
 

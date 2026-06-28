@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#E7E5E0;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:40px 0;}
+</style>
+</helmet>
+
+<div style="width:390px;background:#F7F6F3;border-radius:42px;border:1px solid #E4E2DD;box-shadow:0 30px 80px -30px rgba(19,35,58,.35);overflow:hidden;color:#13233A;display:flex;flex-direction:column;height:844px;">
+
+  <!-- status bar -->
+  <div style="height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;background:#fff;flex-shrink:0;">
+    <span style="font-size:14px;font-weight:600;">9:41</span>
+    <div style="display:flex;align-items:center;gap:7px;"><i data-lucide="signal" style="width:16px;height:16px;"></i><i data-lucide="wifi" style="width:16px;height:16px;"></i><i data-lucide="battery-full" style="width:20px;height:20px;"></i></div>
+  </div>
+
+  <!-- header -->
+  <div style="display:flex;align-items:center;gap:12px;padding:8px 16px 12px;background:#fff;border-bottom:1px solid #ECEAE5;flex-shrink:0;">
+    <i data-lucide="chevron-left" style="width:24px;height:24px;color:#13233A;cursor:pointer;"></i>
+    <div style="position:relative;flex-shrink:0;">
+      <div style="width:42px;height:42px;border-radius:99px;background:#EDF4F3;display:flex;align-items:center;justify-content:center;">
+        <svg width="26" height="26" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="16" stroke="#CFE6E1" stroke-width="5"/><circle cx="22" cy="22" r="16" stroke="#0E8C7F" stroke-width="5" stroke-linecap="round" stroke-dasharray="75 101" transform="rotate(-90 22 22)"/></svg>
+      </div>
+      <span style="position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:99px;background:#1F9D55;border:2px solid #fff;"></span>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:15.5px;font-weight:600;letter-spacing:-0.01em;">Continuum Care Team</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:#1F9D55;font-weight:500;margin-top:1px;"><span style="width:6px;height:6px;border-radius:99px;background:#1F9D55;"></span>Online · typically replies in minutes</div>
+    </div>
+    <i data-lucide="phone" style="width:20px;height:20px;color:#0E8C7F;cursor:pointer;"></i>
+    <i data-lucide="more-vertical" style="width:20px;height:20px;color:#5A6B80;cursor:pointer;"></i>
+  </div>
+
+  <!-- demo banner -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 16px;background:#FBEFDD;flex-shrink:0;">
+    <i data-lucide="info" style="width:14px;height:14px;color:#A6620F;"></i>
+    <span style="font-size:11.5px;color:#A6620F;font-weight:500;">Simulated WhatsApp experience for the prototype</span>
+  </div>
+
+  <!-- thread -->
+  <div data-thread="1" style="flex:1;overflow-y:auto;background:#EAE8E2;padding:18px 14px;display:flex;flex-direction:column;gap:12px;">
+
+    <!-- date chip -->
+    <div style="align-self:center;padding:4px 13px;border-radius:999px;background:rgba(255,255,255,.7);font-size:11px;font-weight:600;color:#8794A5;margin-bottom:2px;">TODAY</div>
+
+    <!-- incoming nudge -->
+    <div style="display:flex;gap:8px;align-items:flex-end;max-width:88%;">
+      <div style="width:28px;height:28px;border-radius:99px;background:#EDF4F3;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:2px;"><svg width="16" height="16" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="16" stroke="#CFE6E1" stroke-width="6"/><circle cx="22" cy="22" r="16" stroke="#0E8C7F" stroke-width="6" stroke-linecap="round" stroke-dasharray="75 101" transform="rotate(-90 22 22)"/></svg></div>
+      <div>
+        <div style="background:#fff;border-radius:16px 16px 16px 4px;padding:12px 14px;box-shadow:0 1px 1px rgba(19,35,58,.06);">
+          <div style="font-size:14px;color:#13233A;line-height:1.5;">Hi Ananya 👋 Just a gentle reminder — your <span style="font-weight:600;">fasting blood sugar test</span> was due on 18 Jun. It only takes a couple of minutes and a phlebotomist can come to you.</div>
+          <div style="font-size:10.5px;color:#A2AAB4;text-align:right;margin-top:5px;">9:12</div>
+        </div>
+        <!-- quick reply chips -->
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;"><i data-lucide="calendar-check" style="width:15px;height:15px;"></i>Book now</button>
+          <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;"><i data-lucide="help-circle" style="width:15px;height:15px;"></i>I have a question</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- patient reply -->
+    <div style="align-self:flex-end;max-width:80%;">
+      <div style="background:#E6F4EC;border-radius:16px 16px 4px 16px;padding:12px 14px;box-shadow:0 1px 1px rgba(19,35,58,.06);">
+        <div style="font-size:14px;color:#16331F;line-height:1.5;">Is this really needed? I feel fine.</div>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:5px;">
+          <span style="font-size:10.5px;color:#6FA585;">9:14</span>
+          <i data-lucide="check-check" style="width:15px;height:15px;color:#0E8C7F;"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- incoming empathetic -->
+    <div style="display:flex;gap:8px;align-items:flex-end;max-width:88%;">
+      <div style="width:28px;height:28px;border-radius:99px;background:#EDF4F3;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:2px;"><svg width="16" height="16" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="16" stroke="#CFE6E1" stroke-width="6"/><circle cx="22" cy="22" r="16" stroke="#0E8C7F" stroke-width="6" stroke-linecap="round" stroke-dasharray="75 101" transform="rotate(-90 22 22)"/></svg></div>
+      <div style="background:#fff;border-radius:16px 16px 16px 4px;padding:12px 14px;box-shadow:0 1px 1px rgba(19,35,58,.06);">
+        <div style="font-size:14px;color:#13233A;line-height:1.5;">Totally fair to ask. Your doctor flagged this because your last reading was borderline — it's just to be sure things are settling. Feeling fine is a great sign.</div>
+        <div style="font-size:14px;color:#13233A;line-height:1.5;margin-top:8px;">Want me to connect you to a care navigator to talk it through?</div>
+        <div style="font-size:10.5px;color:#A2AAB4;text-align:right;margin-top:5px;">9:14</div>
+      </div>
+    </div>
+
+    <!-- system handoff chip -->
+    <div style="align-self:center;display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:#EEF1F5;border:1px solid #DEE4EC;margin:2px 0;">
+      <i data-lucide="loader" style="width:14px;height:14px;color:#64748B;"></i>
+      <span style="font-size:12px;font-weight:600;color:#475569;">Connecting you to Priya, Care Navigator…</span>
+    </div>
+
+    <!-- Priya joins -->
+    <div style="display:flex;gap:8px;align-items:flex-end;max-width:88%;">
+      <div style="width:28px;height:28px;border-radius:99px;background:#13233A;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:2px;font-size:11px;font-weight:600;">P</div>
+      <div style="background:#fff;border-radius:16px 16px 16px 4px;padding:12px 14px;box-shadow:0 1px 1px rgba(19,35,58,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <span style="font-size:12.5px;font-weight:700;color:#0B6F64;">Priya</span>
+          <span style="font-size:11px;color:#8794A5;">Care Navigator</span>
+        </div>
+        <div style="font-size:14px;color:#13233A;line-height:1.5;">Hi Ananya, I'm Priya from your care team. Happy to talk it through whenever suits you — no pressure at all. Would a quick call or chat be easier?</div>
+        <div style="font-size:10.5px;color:#A2AAB4;text-align:right;margin-top:5px;">9:15</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- quick reply bar -->
+  <div style="display:flex;gap:8px;padding:10px 14px 8px;background:#F7F6F3;overflow:hidden;flex-shrink:0;border-top:1px solid #ECEAE5;">
+    <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;"><i data-lucide="phone" style="width:14px;height:14px;"></i>Call me</button>
+    <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Prefer chat</button>
+    <button style="font-family:inherit;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#0B6F64;border:1px solid #BFDCD7;border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Book test</button>
+  </div>
+
+  <!-- input -->
+  <div style="display:flex;align-items:center;gap:10px;padding:6px 14px 22px;background:#F7F6F3;flex-shrink:0;">
+    <i data-lucide="plus" style="width:24px;height:24px;color:#8794A5;cursor:pointer;flex-shrink:0;"></i>
+    <div style="flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E4E2DD;border-radius:999px;padding:11px 16px;">
+      <span style="flex:1;font-size:14px;color:#A2AAB4;">Message your care team…</span>
+      <i data-lucide="smile" style="width:18px;height:18px;color:#A2AAB4;"></i>
+    </div>
+    <button style="font-family:inherit;width:44px;height:44px;border-radius:99px;background:#0E8C7F;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 2px 4px rgba(14,140,127,.3);"><i data-lucide="send" style="width:19px;height:19px;color:#fff;"></i></button>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() { this.drawIcons(); this.scrollBottom(); }
+  componentDidUpdate() { this.drawIcons(); }
+  scrollBottom() {
+    [120, 350, 700].forEach(t => setTimeout(() => {
+      const el = document.querySelector('[data-thread="1"]');
+      if (el) el.scrollTop = el.scrollHeight;
+    }, t));
+  }
+  drawIcons() {
+    if (window.lucide) { try { window.lucide.createIcons({ attrs: { 'stroke-width': 1.75 } }); } catch (e) {} }
+    else { setTimeout(() => this.drawIcons(), 120); }
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
