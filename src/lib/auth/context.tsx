@@ -53,6 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Clear stale viewAs from a previous session so a fresh login always
           // routes to the signed-in user's own home, not a carried-over persona.
           if (event === 'SIGNED_IN') {
+            // Keep guards on the spinner until the profile resolves, so a fresh
+            // login routes to the role home instead of bouncing back to /login.
+            setLoading(true)
             setViewAsState(null)
             if (typeof window !== 'undefined') localStorage.removeItem('continuum.viewAs')
           }
